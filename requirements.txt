@@ -1,0 +1,8 @@
+Flask
+Flask-PyMongo
+PyJWT
+python-dotenv
+requests
+reportlab
+python-jobspy
+pandas

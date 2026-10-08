@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoring Algorithms - Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">Smart Education - Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/question_bank">Question Bank</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/assessments">Assessments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/scoring_algorithms">Scoring Algorithms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Scoring Algorithms Configuration</h2>
+                <p class="text-muted">Configure how skill scores are calculated and updated</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Score Calculation Method</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/admin/update_scoring_algorithm">
+                            <div class="mb-3">
+                                <label class="form-label">Algorithm Type</label>
+                                <select class="form-control" name="algorithm_type" id="algorithm_type" onchange="showAlgorithmPreview()">
+                                    <option value="simple_average" {% if config.algorithm_type == 'simple_average' %}selected{% endif %}>Simple Average</option>
+                                    <option value="weighted_average" {% if config.algorithm_type == 'weighted_average' %}selected{% endif %}>Weighted Average</option>
+                                    <option value="exponential_decay" {% if config.algorithm_type == 'exponential_decay' %}selected{% endif %}>Exponential Decay (Recent scores matter more)</option>
+                                    <option value="adaptive" {% if config.algorithm_type == 'adaptive' %}selected{% endif %}>Adaptive (Difficulty-based)</option>
+                                </select>
+                            </div>
+                            
+                            <div id="weighted-options" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Weight for Recent Assessments (%)</label>
+                                    <input type="range" class="form-range" name="recent_weight" min="0" max="100" value="{{ config.recent_weight|default(70) }}" onchange="updateWeightValue(this.value)">
+                                    <span id="recent_weight_value">{{ config.recent_weight|default(70) }}</span>%
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Weight for Older Assessments (%)</label>
+                                    <input type="range" class="form-range" name="older_weight" min="0" max="100" value="{{ config.older_weight|default(30) }}" onchange="updateOlderWeightValue(this.value)">
+                                    <span id="older_weight_value">{{ config.older_weight|default(30) }}</span>%
+                                </div>
+                            </div>
+                            
+                            <div id="decay-options" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Decay Factor (0-1)</label>
+                                    <input type="range" class="form-range" name="decay_factor" step="0.01" min="0" max="1" value="{{ config.decay_factor|default(0.5) }}" onchange="updateDecayValue(this.value)">
+                                    <span id="decay_value">{{ config.decay_factor|default(0.5) }}</span>
+                                    <small class="text-muted d-block">Higher = older scores decay faster</small>
+                                </div>
+                            </div>
+                            
+                            <div id="adaptive-options" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Difficulty Multiplier</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Easy: <input type="number" class="form-control" name="easy_multiplier" step="0.1" value="{{ config.easy_multiplier|default(1.0) }}"></label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Medium: <input type="number" class="form-control" name="medium_multiplier" step="0.1" value="{{ config.medium_multiplier|default(1.5) }}"></label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Hard: <input type="number" class="form-control" name="hard_multiplier" step="0.1" value="{{ config.hard_multiplier|default(2.0) }}"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Save Algorithm</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Score Normalization</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/admin/update_normalization">
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="enable_normalization" {% if config.enable_normalization %}checked{% endif %}>
+                                    <label class="form-check-label">Enable Score Normalization (0-100 scale)</label>
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Minimum Score Cap (%)</label>
+                                <input type="number" class="form-control" name="min_cap" value="{{ config.min_cap|default(0) }}" min="0" max="100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Maximum Score Cap (%)</label>
+                                <input type="number" class="form-control" name="max_cap" value="{{ config.max_cap|default(100) }}" min="0" max="100">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Normalization</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Algorithm Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="algorithmPreviewChart" style="max-height: 300px;"></canvas>
+                        <div class="mt-3">
+                            <p><strong>Example Calculation:</strong></p>
+                            <div id="preview-text"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Score Distribution Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="scoreDistributionChart" style="max-height: 300px;"></canvas>
+                        <div class="mt-3">
+                            <p><strong>Statistics:</strong></p>
+                            <ul>
+                                <li>Mean Score: <strong>{{ stats.mean_score|default(0) }}%</strong></li>
+                                <li>Median Score: <strong>{{ stats.median_score|default(0) }}%</strong></li>
+                                <li>Standard Deviation: <strong>{{ stats.std_dev|default(0) }}</strong></li>
+                                <li>Top 10% Threshold: <strong>{{ stats.top_10_percent|default(0) }}%</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showAlgorithmPreview() {
+            const algo = document.getElementById('algorithm_type').value;
+            document.getElementById('weighted-options').style.display = algo === 'weighted_average' ? 'block' : 'none';
+            document.getElementById('decay-options').style.display = algo === 'exponential_decay' ? 'block' : 'none';
+            document.getElementById('adaptive-options').style.display = algo === 'adaptive' ? 'block' : 'none';
+            
+            // Update preview
+            updatePreview();
+        }
+        
+        function updateWeightValue(val) {
+            document.getElementById('recent_weight_value').innerText = val;
+            document.getElementById('older_weight_value').innerText = 100 - val;
+            updatePreview();
+        }
+        
+        function updateOlderWeightValue(val) {
+            document.getElementById('older_weight_value').innerText = val;
+            document.getElementById('recent_weight_value').innerText = 100 - val;
+            updatePreview();
+        }
+        
+        function updateDecayValue(val) {
+            document.getElementById('decay_value').innerText = val;
+            updatePreview();
+        }
+        
+        function updatePreview() {
+            const algo = document.getElementById('algorithm_type').value;
+            const scores = [90, 85, 70, 95, 80]; // Example scores
+            let result = 0;
+            let text = '';
+            
+            if (algo === 'simple_average') {
+                result = scores.reduce((a, b) => a + b, 0) / scores.length;
+                text = `Simple Average: (${scores.join(' + ')}) / ${scores.length} = ${result.toFixed(2)}%`;
+            } else if (algo === 'weighted_average') {
+                const recentWeight = parseInt(document.getElementById('recent_weight_value')?.innerText || 70);
+                const recent = scores.slice(-2).reduce((a, b) => a + b, 0) / 2;
+                const older = scores.slice(0, -2).reduce((a, b) => a + b, 0) / (scores.length - 2);
+                result = (recent * recentWeight + older * (100 - recentWeight)) / 100;
+                text = `Weighted Average: Recent (${recent.toFixed(2)}% × ${recentWeight}%) + Older (${older.toFixed(2)}% × ${100 - recentWeight}%) = ${result.toFixed(2)}%`;
+            } else if (algo === 'exponential_decay') {
+                const decay = parseFloat(document.getElementById('decay_value')?.innerText || 0.5);
+                let weightedSum = 0;
+                let weightSum = 0;
+                for (let i = 0; i < scores.length; i++) {
+                    const weight = Math.pow(1 - decay, scores.length - 1 - i);
+                    weightedSum += scores[i] * weight;
+                    weightSum += weight;
+                }
+                result = weightedSum / weightSum;
+                text = `Exponential Decay (factor=${decay}): Recent scores have higher weight = ${result.toFixed(2)}%`;
+            } else if (algo === 'adaptive') {
+                // Simplified adaptive calculation
+                result = scores.reduce((a, b) => a + b, 0) / scores.length;
+                text = `Adaptive: ${result.toFixed(2)}% (with difficulty multipliers)`;
+            }
+            
+            document.getElementById('preview-text').innerHTML = `<strong>${text}</strong>`;
+            
+            // Update chart
+            if (window.previewChart) {
+                window.previewChart.data.datasets[0].data = scores;
+                window.previewChart.update();
+            }
+        }
+        
+        // Initialize preview chart
+        const previewCtx = document.getElementById('algorithmPreviewChart').getContext('2d');
+        window.previewChart = new Chart(previewCtx, {
+            type: 'line',
+            data: {
+                labels: ['Assessment 1', 'Assessment 2', 'Assessment 3', 'Assessment 4', 'Assessment 5'],
+                datasets: [{
+                    label: 'Scores',
+                    data: [90, 85, 70, 95, 80],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Score (%)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Score distribution chart
+        const distributionData = {{ score_distribution|tojson }};
+        const distCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+        new Chart(distCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: distributionData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Score Range'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Initial call
+        showAlgorithmPreview();
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

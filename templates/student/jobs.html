@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Recommendations - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+
+        /* Filter Sidebar */
+        .filter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 80px;
+        }
+
+        .filter-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            border-left: 3px solid #667eea;
+            padding-left: 12px;
+        }
+
+        .form-check {
+            margin-bottom: 10px;
+        }
+
+        /* Job Cards */
+        .job-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .company-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .job-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .job-details i {
+            margin-right: 5px;
+            color: #667eea;
+        }
+
+        .job-description {
+            color: #555;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .match-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .match-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .match-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .match-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .job-source {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .page-link {
+            color: #667eea;
+            border-radius: 8px;
+            margin: 0 3px;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 20px;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .filter-card {
+                margin-bottom: 20px;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/student/dashboard">
+                <i class="bi bi-mortarboard-fill"></i> Smart Education
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/student/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/assessment"><i class="bi bi-pencil-square"></i> Assessments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/results"><i class="bi bi-bar-chart-line"></i> Results</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/student/jobs"><i class="bi bi-briefcase"></i> Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/resume"><i class="bi bi-file-text"></i> Resume</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2><i class="bi bi-briefcase"></i> Recommended Jobs</h2>
+                <p class="text-muted">Personalized job recommendations based on your skills and assessment scores</p>
+            </div>
+        </div>
+
+        <!-- Search and Filter Row -->
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="filter-card">
+                    <h5 class="filter-title"><i class="bi bi-funnel"></i> Filters</h5>
+                    
+                    <form method="GET" action="/student/jobs" id="filterForm">
+                        <div class="mb-3">
+                            <label class="form-label">Search Jobs</label>
+                            <input type="text" class="form-control search-box" name="search" placeholder="e.g., Python Developer" value="{{ search_term }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Job Type</label>
+                            <select class="form-select" name="job_type">
+                                <option value="">All Types</option>
+                                <option value="fulltime" {% if job_type == 'fulltime' %}selected{% endif %}>Full-time</option>
+                                <option value="parttime" {% if job_type == 'parttime' %}selected{% endif %}>Part-time</option>
+                                <option value="contract" {% if job_type == 'contract' %}selected{% endif %}>Contract</option>
+                                <option value="internship" {% if job_type == 'internship' %}selected{% endif %}>Internship</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="remote_only" id="remoteOnly" {% if remote_only %}checked{% endif %}>
+                            <label class="form-check-label" for="remoteOnly">
+                                <i class="bi bi-wifi"></i> Remote Only
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Apply Filters
+                        </button>
+                        
+                        <a href="/student/jobs" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="bi bi-arrow-repeat"></i> Reset
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <!-- Results Count -->
+                <div class="mb-3">
+                    <small class="text-muted">Found <strong>{{ total_jobs }}</strong> job opportunities</small>
+                </div>
+
+                <!-- Job Listings -->
+                {% if jobs %}
+                    {% for job in jobs %}
+                    <div class="job-card" onclick="window.open('{{ job.job_url }}', '_blank')">
+                        <div class="row align-items-start">
+                            <div class="col-md-9">
+                                <h4 class="job-title">{{ job.title }}</h4>
+                                <div class="company-name">
+                                    <i class="bi bi-building"></i> {{ job.company }}
+                                </div>
+                                <div class="job-details">
+                                    <span><i class="bi bi-geo-alt"></i> {{ job.location or 'Location not specified' }}</span>
+                                    <span><i class="bi bi-cash-stack"></i> {{ job.salary or 'Salary not disclosed' }}</span>
+                                    <span><i class="bi bi-briefcase"></i> {{ job.job_type or 'Not specified' }}</span>
+                                    <span><i class="bi bi-calendar"></i> {{ job.date_posted or 'Recently' }}</span>
+                                </div>
+                                <div class="job-description">
+                                    {{ (job.description or 'No description available')[:200] }}{% if job.description and job.description|length > 200 %}...{% endif %}
+                                </div>
+                                <div class="job-source">
+                                    <i class="bi bi-globe"></i> Source: {{ job.site or 'Job Board' }}
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-md-end">
+                                {% if job.match_score %}
+                                    {% if job.match_score >= 70 %}
+                                        <span class="match-badge match-high"><i class="bi bi-star-fill"></i> {{ job.match_score }}% Match</span>
+                                    {% elif job.match_score >= 50 %}
+                                        <span class="match-badge match-medium"><i class="bi bi-star"></i> {{ job.match_score }}% Match</span>
+                                    {% else %}
+                                        <span class="match-badge match-low"><i class="bi bi-star"></i> {{ job.match_score }}% Match</span>
+                                    {% endif %}
+                                {% endif %}
+                                <button class="btn btn-apply btn-sm mt-3" onclick="event.stopPropagation(); window.open('{{ job.job_url }}', '_blank')">
+                                    <i class="bi bi-send"></i> Apply Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5 bg-white rounded">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                        <h4 class="mt-3">No jobs found</h4>
+                        <p class="text-muted">Try adjusting your search filters or complete more assessments to get better matches</p>
+                        <a href="/student/assessment" class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i> Take Assessments
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Pagination -->
+                {% if total_pages > 1 %}
+                <nav>
+                    <ul class="pagination">
+                        {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page-1 }}{% if search_term %}&search={{ search_term }}{% endif %}{% if job_type %}&job_type={{ job_type }}{% endif %}{% if remote_only %}&remote_only=true{% endif %}">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                            {% if p == page %}
+                            <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                            {% elif p <= page + 2 and p >= page - 2 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ p }}{% if search_term %}&search={{ search_term }}{% endif %}{% if job_type %}&job_type={{ job_type }}{% endif %}{% if remote_only %}&remote_only=true{% endif %}">{{ p }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page < total_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page+1 }}{% if search_term %}&search={{ search_term }}{% endif %}{% if job_type %}&job_type={{ job_type }}{% endif %}{% if remote_only %}&remote_only=true{% endif %}">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-submit form when checkbox changes
+        document.getElementById('remoteOnly').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        
+        // Add loading effect on filter submit
+        document.getElementById('filterForm').addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Searching...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

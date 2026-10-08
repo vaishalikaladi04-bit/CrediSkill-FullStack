@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Details - Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">Smart Education - Admin</a>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <h2>Recommendation Details</h2>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Job Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Recommendations</th>
+                                        <th>Applications</th>
+                                        <th>Conversion Rate</th>
+                                    </thead>
+                                <tbody>
+                                    {% for job in job_performance %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.recommendations }}</td>
+                                        <td>{{ job.applications }}</td>
+                                        <td>{{ "%.1f"|format(job.conversion_rate) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

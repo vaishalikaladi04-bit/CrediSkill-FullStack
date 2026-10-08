@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Recruiter Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white !important;
+        }
+        
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .feedback-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feedback-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1.1rem;
+        }
+        
+        .feedback-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-application {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .badge-interview {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .response-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .filter-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feedback-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/company_profile">
+                            <i class="bi bi-building"></i> Company
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/post_job">
+                            <i class="bi bi-plus-circle"></i> Post Job
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/jobs">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/candidates">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/recruiter/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/interviews">
+                            <i class="bi bi-calendar"></i> Interviews
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/messages">
+                            <i class="bi bi-envelope"></i> Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/analytics">
+                            <i class="bi bi-graph-up"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">
+                    <i class="bi bi-chat-dots text-primary"></i> Candidate Feedback
+                </h2>
+                <p class="text-muted">View and respond to feedback from candidates</p>
+            </div>
+            <div>
+                <button class="btn btn-export" onclick="exportFeedback()">
+                    <i class="bi bi-download"></i> Export Report
+                </button>
+                <button class="btn btn-outline-secondary ms-2" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total Feedback</h6>
+                                <h2 class="mb-0">{{ stats.total_feedbacks }}</h2>
+                            </div>
+                            <i class="bi bi-chat-dots fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Average Rating</h6>
+                                <h2 class="mb-0">{{ stats.avg_rating }} <i class="bi bi-star-fill"></i></h2>
+                            </div>
+                            <i class="bi bi-star fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Positive Feedback</h6>
+                                <h2 class="mb-0">{{ stats.positive_feedback }}</h2>
+                            </div>
+                            <i class="bi bi-emoji-smile fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Needs Improvement</h6>
+                                <h2 class="mb-0">{{ stats.needs_improvement }}</h2>
+                            </div>
+                            <i class="bi bi-emoji-frown fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rating Distribution and Feedback Type -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Rating Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if stats.total_feedbacks > 0 %}
+                            {% for rating in [5,4,3,2,1] %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>
+                                        {% for i in range(rating) %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% endfor %}
+                                        {% for i in range(5-rating) %}
+                                            <i class="bi bi-star text-muted"></i>
+                                        {% endfor %}
+                                    </span>
+                                    <span class="text-muted">{{ stats.rating_distribution[rating] }} reviews</span>
+                                </div>
+                                <div class="progress" style="height: 8px; border-radius: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: {{ (stats.rating_distribution[rating] / stats.total_feedbacks * 100) if stats.total_feedbacks > 0 else 0 }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="mt-2 text-muted">No rating data available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0"><i class="bi bi-pie-chart"></i> Feedback Type</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if stats.total_feedbacks > 0 and stats.feedback_by_type %}
+                            <canvas id="feedbackTypeChart" style="max-height: 220px;"></canvas>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="mt-2 text-muted">No feedback type data available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="searchFeedback" placeholder="Search by student name or feedback...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select class="form-select" id="filterRating">
+                        <option value="all">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select class="form-select" id="filterType">
+                        <option value="all">All Types</option>
+                        <option value="application">Job Applications</option>
+                        <option value="interview">Interviews</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="bi bi-arrow-repeat"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feedback List -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Feedback</h5>
+                <span class="badge bg-primary">{{ feedbacks|length }} entries</span>
+            </div>
+            <div class="card-body">
+                {% if feedbacks and feedbacks|length > 0 %}
+                    <div id="feedbackList">
+                        {% for feedback in feedbacks %}
+                        <div class="feedback-card" data-rating="{{ feedback.rating }}" data-type="{{ feedback.type }}" data-aos="fade-up">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <i class="bi bi-person-circle"></i> 
+                                                        <strong>{{ feedback.student_name }}</strong>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-envelope"></i> {{ feedback.student_email }}
+                                                    </small>
+                                                </div>
+                                                <span class="feedback-badge {% if feedback.type == 'application' %}badge-application{% else %}badge-interview{% endif %}">
+                                                    {% if feedback.type == 'application' %}
+                                                        <i class="bi bi-briefcase"></i> Job Application
+                                                    {% else %}
+                                                        <i class="bi bi-chat"></i> Interview
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            
+                                            {% if feedback.job_title %}
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-briefcase"></i> Position: {{ feedback.job_title }}
+                                                </small>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <div class="rating-stars mb-2">
+                                                {% for i in range(feedback.rating) %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                {% endfor %}
+                                                {% for i in range(5 - feedback.rating) %}
+                                                    <i class="bi bi-star"></i>
+                                                {% endfor %}
+                                                <span class="text-muted ms-2">
+                                                    <i class="bi bi-calendar"></i> {{ feedback.date.strftime('%Y-%m-%d %H:%M') if feedback.date else 'N/A' }}
+                                                </span>
+                                            </div>
+                                            
+                                            <p class="mb-2">{{ feedback.feedback }}</p>
+                                            
+                                            {% if feedback.suggestions %}
+                                            <div class="alert alert-info mt-2 mb-0">
+                                                <i class="bi bi-lightbulb"></i> <strong>Suggestion:</strong> {{ feedback.suggestions }}
+                                            </div>
+                                            {% endif %}
+                                            
+                                            {% if feedback.recruiter_response %}
+                                            <div class="response-box">
+                                                <i class="bi bi-reply-fill text-success"></i> <strong>Your Response:</strong>
+                                                <p class="mb-0 mt-1">{{ feedback.recruiter_response }}</p>
+                                                <small class="text-muted">
+                                                    Responded on {{ feedback.response_date.strftime('%Y-%m-%d %H:%M') if feedback.response_date else 'N/A' }}
+                                                </small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-4 text-md-end">
+                                            <a href="/recruiter/feedback/{{ feedback._id }}" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-eye"></i> View Details
+                                            </a>
+                                            {% if not feedback.recruiter_response %}
+                                            <button class="btn btn-success btn-sm mt-2 mt-md-0" onclick="location.href='/recruiter/feedback/{{ feedback._id }}'">
+                                                <i class="bi bi-reply"></i> Respond
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-chat-dots"></i>
+                        <h5 class="text-muted">No feedback received yet</h5>
+                        <p class="text-muted">When candidates provide feedback, it will appear here.</p>
+                        <a href="/recruiter/dashboard" class="btn btn-primary mt-3">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true });
+        
+        // Animate progress bars
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 200);
+        });
+        
+        {% if stats.total_feedbacks > 0 and stats.feedback_by_type %}
+        // Feedback Type Chart
+        const ctx = document.getElementById('feedbackTypeChart');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Job Applications', 'Interviews'],
+                    datasets: [{
+                        data: [{{ stats.feedback_by_type.application }}, {{ stats.feedback_by_type.interview }}],
+                        backgroundColor: ['#667eea', '#f093fb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        {% endif %}
+        
+        // Search and filter functionality
+        function filterFeedback() {
+            const searchTerm = document.getElementById('searchFeedback').value.toLowerCase();
+            const ratingFilter = document.getElementById('filterRating').value;
+            const typeFilter = document.getElementById('filterType').value;
+            
+            const cards = document.querySelectorAll('.feedback-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                const rating = card.getAttribute('data-rating');
+                const type = card.getAttribute('data-type');
+                
+                let show = true;
+                
+                if (searchTerm && !text.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                if (ratingFilter !== 'all' && rating !== ratingFilter) {
+                    show = false;
+                }
+                
+                if (typeFilter !== 'all' && type !== typeFilter) {
+                    show = false;
+                }
+                
+                if (show) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            let noResultsMsg = document.getElementById('noResultsMsg');
+            if (visibleCount === 0 && cards.length > 0) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'noResultsMsg';
+                    noResultsMsg.className = 'text-center py-5';
+                    noResultsMsg.innerHTML = `
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-2 text-muted">No feedback matches your filters</p>
+                        <button class="btn btn-primary btn-sm" onclick="resetFilters()">Reset Filters</button>
+                    `;
+                    document.getElementById('feedbackList').appendChild(noResultsMsg);
+                }
+                noResultsMsg.style.display = 'block';
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+        
+        function resetFilters() {
+            document.getElementById('searchFeedback').value = '';
+            document.getElementById('filterRating').value = 'all';
+            document.getElementById('filterType').value = 'all';
+            filterFeedback();
+        }
+        
+        // Export feedback data
+        function exportFeedback() {
+            let csvContent = "Student Name,Email,Rating,Type,Feedback,Suggestions,Date\n";
+            
+            {% for feedback in feedbacks %}
+                csvContent += `"{{ feedback.student_name }}","{{ feedback.student_email }}",{{ feedback.rating }},"{{ feedback.type }}","{{ feedback.feedback.replace('"', '""') }}","{{ feedback.suggestions.replace('"', '""') if feedback.suggestions else '' }}","{{ feedback.date.strftime('%Y-%m-%d %H:%M:%S') if feedback.date else '' }}"\n`;
+            {% endfor %}
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `feedback_export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Add event listeners
+        document.getElementById('searchFeedback').addEventListener('keyup', filterFeedback);
+        document.getElementById('filterRating').addEventListener('change', filterFeedback);
+        document.getElementById('filterType').addEventListener('change', filterFeedback);
+        
+        // Initialize filters
+        filterFeedback();
+    </script>
+</body>
+</html>

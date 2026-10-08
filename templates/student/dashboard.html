@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar Enhancement */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Stat Cards */
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        /* Skill Progress Bars */
+        .skill-item {
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            position: relative;
+            transition: width 1.5s ease;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -2px;
+            width: 4px;
+            height: 14px;
+            background: white;
+            border-radius: 2px;
+        }
+        
+        /* Quick Actions Buttons */
+        .action-btn {
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        /* Achievement Badge */
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .achievement-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Recent Activity */
+        .activity-item {
+            padding: 12px;
+            border-left: 3px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stat-card {
+                margin-bottom: 20px;
+            }
+            
+            .welcome-card h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/student/dashboard">
+                <i class="bi bi-mortarboard-fill"></i> Smart Education
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/student/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/profile">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/assessment">
+                            <i class="bi bi-pencil-square"></i> Assessments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/results">
+                            <i class="bi bi-bar-chart-line"></i> Results
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/jobs">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/resume">
+                            <i class="bi bi-file-text"></i> Resume
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Welcome Card -->
+        <div class="welcome-card" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-2">Welcome back, <strong>{{ session.user_name }}</strong>! 👋</h2>
+                    <p class="mb-0">Continue your learning journey and track your progress</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-stars" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="card stat-card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <i class="bi bi-trophy stat-icon"></i>
+                        <h6 class="card-title">Overall Skill Score</h6>
+                        <h1 class="display-3 fw-bold mb-2">{{ "%.2f"|format(profile.overall_score|default(0)) }}%</h1>
+                        <p class="mb-0">Based on completed assessments</p>
+                        <a href="/student/assessment" class="btn btn-light mt-3">
+                            <i class="bi bi-arrow-right"></i> Take Assessment
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card stat-card bg-success text-white h-100">
+                    <div class="card-body">
+                        <i class="bi bi-check-circle-fill stat-icon"></i>
+                        <h6 class="card-title">Profile Completion</h6>
+                        {% set projects_count = profile.projects|length if profile.projects else 0 %}
+                        {% set certs_count = profile.certifications|length if profile.certifications else 0 %}
+                        {% set achievements_count = profile.achievements|length if profile.achievements else 0 %}
+                        {% set completion = ((projects_count + certs_count + achievements_count) / 15 * 100) if (projects_count + certs_count + achievements_count) < 15 else 100 %}
+                        <h1 class="display-3 fw-bold mb-2">{{ "%.0f"|format(completion) }}%</h1>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-light" style="width: {{ completion }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span><i class="bi bi-folder"></i> Projects: {{ projects_count }}/5</span>
+                            <span><i class="bi bi-award"></i> Certs: {{ certs_count }}/5</span>
+                            <span><i class="bi bi-star"></i> Achievements: {{ achievements_count }}/5</span>
+                        </div>
+                        <a href="/student/profile" class="btn btn-light mt-3">
+                            <i class="bi bi-pencil"></i> Complete Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card stat-card bg-info text-white h-100">
+                    <div class="card-body">
+                        <i class="bi bi-lightning-charge stat-icon"></i>
+                        <h6 class="card-title">Quick Actions</h6>
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="/student/assessment" class="btn btn-light action-btn">
+                                <i class="bi bi-pencil-square"></i> Take Assessment
+                            </a>
+                            <a href="/student/jobs" class="btn btn-light action-btn">
+                                <i class="bi bi-briefcase"></i> Find Jobs
+                            </a>
+                            <a href="/student/resume" class="btn btn-light action-btn">
+                                <i class="bi bi-file-text"></i> Generate Resume
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skill Scores & Chart Row -->
+        <div class="row mt-4">
+            <div class="col-md-6 mb-4" data-aos="fade-right">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up text-primary"></i> Skill Scores Breakdown
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if profile.skill_scores and profile.skill_scores|length > 0 %}
+                            {% for skill, score in profile.skill_scores.items() %}
+                            <div class="skill-item">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <label class="fw-semibold">
+                                        <i class="bi bi-code-slash"></i> {{ skill|title }}
+                                    </label>
+                                    <span class="text-primary fw-bold">{{ "%.2f"|format(score) }}%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ score }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-bar-chart-line" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="text-muted mt-3">No assessments completed yet.<br>Take your first assessment to see your skill scores!</p>
+                                <a href="/student/assessment" class="btn btn-primary">Take Assessment</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4" data-aos="fade-left">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pie-chart text-primary"></i> Performance Overview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="border rounded p-2">
+                                        <small class="text-muted">Average Score</small>
+                                        <h6 class="mb-0 text-primary">{{ "%.1f"|format(profile.overall_score|default(0)) }}%</h6>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="border rounded p-2">
+                                        <small class="text-muted">Assessments</small>
+                                        <h6 class="mb-0 text-success">{{ profile.skill_scores|length if profile.skill_scores else 0 }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="border rounded p-2">
+                                        <small class="text-muted">Rank</small>
+                                        <h6 class="mb-0 text-warning">Top 15%</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Achievements & Recent Activity -->
+        <div class="row mt-4 mb-5">
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-trophy text-warning"></i> Recent Achievements
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap">
+                            {% if profile.overall_score and profile.overall_score >= 90 %}
+                            <div class="achievement-badge">
+                                <i class="bi bi-star-fill"></i> Master Level
+                            </div>
+                            {% endif %}
+                            {% if profile.overall_score and profile.overall_score >= 75 %}
+                            <div class="achievement-badge">
+                                <i class="bi bi-trophy"></i> Top Performer
+                            </div>
+                            {% endif %}
+                            {% if profile.skill_scores and profile.skill_scores|length >= 3 %}
+                            <div class="achievement-badge">
+                                <i class="bi bi-layers"></i> Multi-Skill Expert
+                            </div>
+                            {% endif %}
+                            {% if profile.projects and profile.projects|length >= 3 %}
+                            <div class="achievement-badge">
+                                <i class="bi bi-folder-check"></i> Project Master
+                            </div>
+                            {% endif %}
+                            {% if not profile.overall_score or profile.overall_score == 0 %}
+                            <div class="text-muted text-center w-100 py-3">
+                                <i class="bi bi-emoji-smile" style="font-size: 2rem;"></i>
+                                <p>Complete assessments to unlock achievements!</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history text-info"></i> Recent Activity
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-item">
+                            <i class="bi bi-pencil-square text-primary me-2"></i>
+                            <strong>Last Assessment</strong>
+                            <p class="mb-0 text-muted small">No assessments taken yet</p>
+                        </div>
+                        <div class="activity-item">
+                            <i class="bi bi-briefcase text-success me-2"></i>
+                            <strong>Job Applications</strong>
+                            <p class="mb-0 text-muted small">0 applications submitted</p>
+                        </div>
+                        <div class="activity-item">
+                            <i class="bi bi-file-text text-info me-2"></i>
+                            <strong>Resume Status</strong>
+                            <p class="mb-0 text-muted small">Ready to generate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Performance Chart
+        {% if profile.skill_scores and profile.skill_scores|length > 0 %}
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const skillNames = {{ profile.skill_scores.keys()|list|tojson }};
+        const skillValues = {{ profile.skill_scores.values()|list|tojson }};
+        
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: skillNames.map(name => name.charAt(0).toUpperCase() + name.slice(1)),
+                datasets: [{
+                    label: 'Skill Score',
+                    data: skillValues,
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            backdropColor: 'transparent'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        {% endif %}
+        
+        // Animate progress bars on load
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+        
+        // Add hover effect to stat cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

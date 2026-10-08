@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Assessment - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .assessment-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .assessment-header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .option-label {
+            display: block;
+            padding: 12px 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-label:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .option-input:checked + .option-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .option-input {
+            display: none;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .assessment-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .assessment-container {
+                margin: 20px auto;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container assessment-container">
+        <div class="assessment-header">
+            <div class="assessment-info">
+                <div>
+                    <h3>{{ assessment.title }}</h3>
+                    <p class="text-muted mb-0">{{ assessment.description }}</p>
+                </div>
+                <div class="text-end">
+                    <div class="timer" id="timer">30:00</div>
+                    <small class="text-muted">Time Remaining</small>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <small>Progress</small>
+                    <small id="progressText">0/{{ assessment.questions|length }}</small>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar-custom" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Assessment {{ assessment.current_index + 1 }} of {{ assessment.total_assessments }}
+                </small>
+            </div>
+        </div>
+        
+        <form method="POST" action="/student/submit-onboarding-assessment" id="assessmentForm">
+            <input type="hidden" name="assessment_id" value="{{ assessment._id }}">
+            <input type="hidden" name="current_index" value="{{ assessment.current_index }}">
+            
+            {% for question in assessment.questions %}
+            {% set outer_loop = loop %}
+            <div class="question-card" data-question="{{ outer_loop.index0 }}">
+                <div class="question-text">
+                    Q{{ outer_loop.index }}. {{ question.question }}
+                </div>
+                <div class="options">
+                    {% for option in question.options %}
+                    <div>
+                        <input type="radio" name="question_{{ outer_loop.index0 }}" value="{{ option }}" id="q{{ outer_loop.index0 }}_{{ loop.index0 }}" class="option-input">
+                        <label for="q{{ outer_loop.index0 }}_{{ loop.index0 }}" class="option-label">
+                            {{ option }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-submit" id="submitBtn" onclick="submitAssessment()">
+                    <i class="fas fa-check-circle"></i> Submit Assessment
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        let timeLeft = 30 * 60; // 30 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const totalQuestions = {{ assessment.questions|length }};
+        
+        // Timer functionality
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAssessment();
+            }
+            
+            timeLeft--;
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Track answered questions
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 0; i < totalQuestions; i++) {
+                const radios = document.getElementsByName(`question_${i}`);
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        answered++;
+                        break;
+                    }
+                }
+            }
+            
+            const percentage = (answered / totalQuestions) * 100;
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${answered}/${totalQuestions}`;
+        }
+        
+        // Add event listeners to all radio buttons
+        for (let i = 0; i < totalQuestions; i++) {
+            const radios = document.getElementsByName(`question_${i}`);
+            for (let radio of radios) {
+                radio.addEventListener('change', updateProgress);
+            }
+        }
+        
+        // Submit assessment
+        function submitAssessment() {
+            // Check if all questions are answered
+            let allAnswered = true;
+            for (let i = 0; i < totalQuestions; i++) {
+                const radios = document.getElementsByName(`question_${i}`);
+                let answered = false;
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        answered = true;
+                        break;
+                    }
+                }
+                if (!answered) {
+                    allAnswered = false;
+                    alert(`Please answer question ${i + 1}`);
+                    document.querySelector(`[data-question="${i}"]`).scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+            }
+            
+            if (confirm('Are you sure you want to submit this assessment?')) {
+                clearInterval(timerInterval);
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+                document.getElementById('assessmentForm').submit();
+            }
+        }
+        
+        // Initial progress update
+        updateProgress();
+        
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', function(e) {
+            // Check if any questions are answered
+            let anyAnswered = false;
+            for (let i = 0; i < totalQuestions; i++) {
+                const radios = document.getElementsByName(`question_${i}`);
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        anyAnswered = true;
+                        break;
+                    }
+                }
+            }
+            if (anyAnswered) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved answers. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+    </script>
+</body>
+</html>

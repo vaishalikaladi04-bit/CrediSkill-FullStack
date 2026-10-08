@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessments - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar Enhancement */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .header-section h2 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Assessment Cards */
+        .assessment-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .assessment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1;
+        }
+        
+        .card-header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+        }
+        
+        .assessment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .assessment-details {
+            padding: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #666;
+        }
+        
+        .detail-item i {
+            width: 25px;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .filter-select {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+        }
+        
+        .search-bar input {
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 20px 12px 45px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .stats-card {
+                margin-bottom: 15px;
+            }
+            
+            .assessment-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .loading-card {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/student/dashboard">
+                <i class="bi bi-mortarboard-fill"></i> Smart Education
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/profile">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/student/assessment">
+                            <i class="bi bi-pencil-square"></i> Assessments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/results">
+                            <i class="bi bi-bar-chart-line"></i> Results
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/jobs">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/resume">
+                            <i class="bi bi-file-text"></i> Resume
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Skill Assessments</h2>
+                    <p>Validate your skills, earn verified badges, and boost your career opportunities</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-trophy" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="stats-card">
+                    <i class="bi bi-file-text" style="font-size: 2rem; color: #667eea;"></i>
+                    <div class="stats-number">{{ assessments|length }}</div>
+                    <div class="text-muted">Available Assessments</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <i class="bi bi-clock-history" style="font-size: 2rem; color: #28a745;"></i>
+                    <div class="stats-number">30-60</div>
+                    <div class="text-muted">Minutes per Assessment</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <i class="bi bi-award" style="font-size: 2rem; color: #ffc107;"></i>
+                    <div class="stats-number">Verified</div>
+                    <div class="text-muted">Skill Certificates</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter & Search Section -->
+        <div class="filter-section" data-aos="fade-up">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search assessments by title or category...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <select id="categoryFilter" class="form-select filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="Python">Python</option>
+                        <option value="Java">Java</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="SQL">SQL</option>
+                        <option value="Data Structures">Data Structures</option>
+                        <option value="Algorithms">Algorithms</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="sortFilter" class="form-select filter-select">
+                        <option value="default">Sort by: Default</option>
+                        <option value="duration-asc">Duration: Short to Long</option>
+                        <option value="duration-desc">Duration: Long to Short</option>
+                        <option value="questions-asc">Questions: Few to Many</option>
+                        <option value="questions-desc">Questions: Many to Few</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assessments Grid -->
+        <div class="row" id="assessmentsContainer">
+            {% if assessments %}
+                {% for assessment in assessments %}
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                    <div class="assessment-card" data-category="{{ assessment.category }}" data-duration="{{ assessment.duration }}" data-questions="{{ assessment.questions|length }}" data-title="{{ assessment.title }}">
+                        <div class="card-header-gradient">
+                            <div class="assessment-icon">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <h5 class="mb-0">{{ assessment.title }}</h5>
+                        </div>
+                        <div class="assessment-details">
+                            <p class="text-muted mb-3">{{ assessment.description[:100] }}{% if assessment.description|length > 100 %}...{% endif %}</p>
+                            
+                            <div class="detail-item">
+                                <i class="bi bi-tag"></i>
+                                <span>{{ assessment.category }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ assessment.duration }} minutes</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="bi bi-question-circle"></i>
+                                <span>{{ assessment.questions|length }} questions</span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">Estimated time</small>
+                                    <small class="text-muted">{{ assessment.duration }} min</small>
+                                </div>
+                                <div class="progress mb-3" style="height: 5px;">
+                                    <div class="progress-bar bg-success" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <a href="/student/take_assessment/{{ assessment._id }}" class="btn btn-start">
+                                <i class="bi bi-play-fill"></i> Start Assessment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h4>No Assessments Available</h4>
+                        <p class="text-muted">New assessments will be added soon. Check back later!</p>
+                        <a href="/student/dashboard" class="btn btn-primary mt-3">
+                            <i class="bi bi-house"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- No Results Message -->
+        <div id="noResults" class="empty-state" style="display: none;">
+            <i class="bi bi-search"></i>
+            <h4>No matching assessments found</h4>
+            <p class="text-muted">Try adjusting your search or filter criteria</p>
+            <button class="btn btn-primary" onclick="resetFilters()">
+                <i class="bi bi-arrow-repeat"></i> Reset Filters
+            </button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Filter and Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const assessmentsContainer = document.getElementById('assessmentsContainer');
+        const noResults = document.getElementById('noResults');
+        
+        function filterAndSortAssessments() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+            const sortBy = sortFilter.value;
+            
+            const cards = Array.from(document.querySelectorAll('.assessment-card'));
+            let visibleCount = 0;
+            
+            // Filter cards
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                const cardTitle = card.getAttribute('data-title').toLowerCase();
+                const cardDescription = card.querySelector('p').innerText.toLowerCase();
+                
+                let matchesSearch = cardTitle.includes(searchTerm) || cardDescription.includes(searchTerm);
+                let matchesCategory = category === 'all' || cardCategory === category;
+                
+                if (matchesSearch && matchesCategory) {
+                    card.closest('.col-md-6').style.display = '';
+                    visibleCount++;
+                } else {
+                    card.closest('.col-md-6').style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                assessmentsContainer.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                assessmentsContainer.style.display = '';
+                noResults.style.display = 'none';
+            }
+            
+            // Sort cards
+            if (sortBy !== 'default') {
+                const container = assessmentsContainer;
+                const items = Array.from(container.children).filter(child => child.style.display !== 'none');
+                
+                items.sort((a, b) => {
+                    const cardA = a.querySelector('.assessment-card');
+                    const cardB = b.querySelector('.assessment-card');
+                    
+                    if (sortBy === 'duration-asc') {
+                        return parseInt(cardA.getAttribute('data-duration')) - parseInt(cardB.getAttribute('data-duration'));
+                    } else if (sortBy === 'duration-desc') {
+                        return parseInt(cardB.getAttribute('data-duration')) - parseInt(cardA.getAttribute('data-duration'));
+                    } else if (sortBy === 'questions-asc') {
+                        return parseInt(cardA.getAttribute('data-questions')) - parseInt(cardB.getAttribute('data-questions'));
+                    } else if (sortBy === 'questions-desc') {
+                        return parseInt(cardB.getAttribute('data-questions')) - parseInt(cardA.getAttribute('data-questions'));
+                    }
+                    return 0;
+                });
+                
+                items.forEach(item => container.appendChild(item));
+            }
+        }
+        
+        function resetFilters() {
+            searchInput.value = '';
+            categoryFilter.value = 'all';
+            sortFilter.value = 'default';
+            filterAndSortAssessments();
+        }
+        
+        // Add event listeners
+        searchInput.addEventListener('input', filterAndSortAssessments);
+        categoryFilter.addEventListener('change', filterAndSortAssessments);
+        sortFilter.addEventListener('change', filterAndSortAssessments);
+        
+        // Animate progress bars on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    const duration = card.getAttribute('data-duration');
+                    const progressBar = card.querySelector('.progress-bar');
+                    if (progressBar && progressBar.style.width === '0%') {
+                        // Animate progress based on duration (shorter duration = higher completion)
+                        const completion = Math.min(100, (30 / duration) * 100);
+                        setTimeout(() => {
+                            progressBar.style.width = completion + '%';
+                        }, 200);
+                    }
+                    progressObserver.unobserve(card);
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.assessment-card').forEach(card => {
+            progressObserver.observe(card);
+        });
+        
+        // Add hover effect to cards
+        document.querySelectorAll('.assessment-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

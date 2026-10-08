@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank | Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f0f2f8;
+            scroll-behavior: smooth;
+        }
+
+        /* Enhanced navbar with subtle gradient */
+        .navbar {
+            background: linear-gradient(135deg, #0a1c2f 0%, #0b2b3b 100%) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            padding: 0.85rem 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            font-size: 1.45rem;
+            background: linear-gradient(120deg, #fff, #a0d2ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+            margin: 0 2px;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover, 
+        .navbar-dark .navbar-nav .nav-link.active {
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
+
+        /* Main container animation */
+        .container.mt-4 {
+            animation: fadeSlideUp 0.4s ease-out;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card styling */
+        .card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: #ffffff;
+        }
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #eef2f6;
+            padding: 1.25rem 1.5rem;
+            border-radius: 24px 24px 0 0 !important;
+            font-weight: 600;
+        }
+        .card-header h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #1a2c3e;
+            letter-spacing: -0.2px;
+        }
+
+        /* Question card modern redesign */
+        .question-card {
+            background: #ffffff;
+            margin-bottom: 20px;
+            padding: 1.5rem;
+            border-radius: 20px;
+            border-left: 6px solid;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03), 0 0 0 1px #edf2f7;
+            transition: all 0.25s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1), 0 0 0 1px #e2e8f0;
+        }
+        .difficulty-easy { border-left-color: #2b9348; }
+        .difficulty-medium { border-left-color: #e9b35f; }
+        .difficulty-hard { border-left-color: #e25c5c; }
+
+        .question-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0f2b3d;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .options-list {
+            background: #fafcff;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid #eef2f9;
+        }
+        .options-list ul {
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .options-list li {
+            background: #ffffff;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            border: 1px solid #e2edf7;
+            color: #1f3a4b;
+            transition: all 0.1s;
+        }
+        .options-list li i.bi-check-circle-fill {
+            color: #2b9348;
+            margin-right: 6px;
+        }
+        .correct-option {
+            background: #e6f7e6 !important;
+            border-color: #2b9348 !important;
+            font-weight: 500;
+        }
+        .btn-icon-group {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-sm-custom {
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        /* filter bar enhancements */
+        .filter-card .form-control, .filter-card .form-select {
+            border-radius: 48px;
+            border: 1px solid #e2e8f0;
+            padding: 0.55rem 1rem;
+            background: #ffffff;
+            font-size: 0.9rem;
+        }
+        .filter-card .btn-primary, .filter-card .btn-secondary {
+            border-radius: 48px;
+            padding: 0.55rem 1rem;
+            font-weight: 500;
+        }
+
+        /* modal polish */
+        .modal-content {
+            border-radius: 32px;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            border-bottom: 1px solid #eef2f8;
+            background: #fefefe;
+            padding: 1.25rem 1.75rem;
+        }
+        .modal-footer {
+            border-top: 1px solid #eef2f8;
+            padding: 1rem 1.75rem;
+        }
+        .form-control, .form-select {
+            border-radius: 16px;
+            border: 1px solid #e0e9f0;
+            padding: 0.65rem 1rem;
+            transition: 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+        }
+
+        /* pagination modern */
+        .pagination {
+            gap: 6px;
+            margin-top: 1.5rem;
+        }
+        .page-link {
+            border-radius: 40px !important;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0 2px;
+            color: #2c3e50;
+            font-weight: 500;
+            background: #f1f5f9;
+            transition: all 0.2s;
+        }
+        .page-item.active .page-link {
+            background: #1e4b6e;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .page-link:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        /* badge color improvements */
+        .badge-difficulty {
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3px;
+        }
+
+        /* empty state illustration */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: #fafcff;
+            border-radius: 28px;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .question-card {
+                padding: 1rem;
+            }
+            .btn-icon-group {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
+
+        /* custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eef2f8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b9cadb;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard"><i class="bi bi-mortarboard-fill me-2"></i>Smart Education · Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users"><i class="bi bi-people me-1"></i>Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/question_bank"><i class="bi bi-quote me-1"></i>Question Bank</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/assessments"><i class="bi bi-pencil-square me-1"></i>Assessments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/analytics"><i class="bi bi-graph-up me-1"></i>Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                    <h2 class="fw-bold" style="color: #1a3e50;"><i class="bi bi-database-check me-2 text-primary"></i>Question Bank Management</h2>
+                    <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                        <i class="bi bi-plus-circle me-2"></i> Add New Question
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced Filters -->
+        <div class="card filter-card mb-4">
+            <div class="card-body p-4">
+                <form method="GET" action="/admin/question_bank" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small text-secondary"><i class="bi bi-search"></i> Search</label>
+                        <input type="text" class="form-control" name="search" placeholder="Type question, keyword..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small text-secondary"><i class="bi bi-tag"></i> Category</label>
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            <option value="Python" {% if category == 'Python' %}selected{% endif %}>Python</option>
+                            <option value="Java" {% if category == 'Java' %}selected{% endif %}>Java</option>
+                            <option value="JavaScript" {% if category == 'JavaScript' %}selected{% endif %}>JavaScript</option>
+                            <option value="SQL" {% if category == 'SQL' %}selected{% endif %}>SQL</option>
+                            <option value="Data Structures" {% if category == 'Data Structures' %}selected{% endif %}>Data Structures</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small text-secondary"><i class="bi bi-bar-chart-steps"></i> Difficulty</label>
+                        <select class="form-select" name="difficulty">
+                            <option value="">All Difficulties</option>
+                            <option value="easy" {% if difficulty == 'easy' %}selected{% endif %}>Easy</option>
+                            <option value="medium" {% if difficulty == 'medium' %}selected{% endif %}>Medium</option>
+                            <option value="hard" {% if difficulty == 'hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill"><i class="bi bi-funnel-fill me-1"></i> Apply</button>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/question_bank" class="btn btn-outline-secondary w-100 rounded-pill"><i class="bi bi-arrow-repeat me-1"></i> Reset Filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Questions List with Enhanced Styling -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                        <h5><i class="bi bi-journal-bookmark-fill me-2 text-primary"></i>Question Bank · {{ total_questions }} questions</h5>
+                        <span class="badge bg-light text-dark rounded-pill px-3 py-2"><i class="bi bi-stack"></i> {{ questions|length if questions else 0 }} displayed</span>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if questions %}
+                            {% for question in questions %}
+                            <div class="question-card difficulty-{{ question.difficulty }}">
+                                <div class="d-flex justify-content-between flex-wrap gap-3">
+                                    <div class="flex-grow-1">
+                                        <div class="question-text">
+                                            <i class="bi bi-quote me-2 text-primary opacity-75"></i>{{ question.question }}
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+                                            <span class="meta-badge"><i class="bi bi-folder2-open"></i> {{ question.category }}</span>
+                                            <span class="meta-badge">
+                                                <i class="bi bi-flag"></i> 
+                                                <span class="badge-difficulty {% if question.difficulty == 'easy' %}bg-success text-white{% elif question.difficulty == 'medium' %}bg-warning text-dark{% else %}bg-danger text-white{% endif %} px-3 py-1 rounded-pill ms-1">
+                                                    {{ question.difficulty|upper }}
+                                                </span>
+                                            </span>
+                                            <span class="meta-badge"><i class="bi bi-bar-chart"></i> Used in {{ question.usage_count }} assessments</span>
+                                        </div>
+                                        <div class="options-list">
+                                            <div class="small fw-semibold text-secondary mb-2"><i class="bi bi-list-ul"></i> Answer choices</div>
+                                            <ul class="list-unstyled d-flex flex-wrap gap-2 mb-0">
+                                                {% for option in question.options %}
+                                                <li class="{% if option == question.correct_answer %}correct-option{% endif %}">
+                                                    {% if option == question.correct_answer %}
+                                                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                                                    {% else %}
+                                                    <i class="bi bi-circle text-secondary me-1"></i>
+                                                    {% endif %}
+                                                    {{ option }}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% if question.explanation %}
+                                        <div class="mt-3 small text-muted bg-light p-2 rounded-3">
+                                            <i class="bi bi-lightbulb me-1 text-warning"></i> <strong>Explanation:</strong> {{ question.explanation }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="btn-icon-group">
+                                        <button class="btn btn-outline-warning btn-sm-custom rounded-pill" onclick="editQuestion('{{ question._id }}')">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm-custom rounded-pill" onclick="deleteQuestion('{{ question._id }}')">
+                                            <i class="bi bi-trash3"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Enhanced Pagination -->
+                            <nav aria-label="Question navigation" class="mt-4">
+                                <ul class="pagination justify-content-center flex-wrap">
+                                    {% if page > 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page-1 }}&search={{ search }}&category={{ category }}&difficulty={{ difficulty }}"><i class="bi bi-chevron-left"></i> Prev</a>
+                                    </li>
+                                    {% endif %}
+                                    {% for p in range(1, total_pages + 1) %}
+                                    <li class="page-item {% if p == page %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ p }}&search={{ search }}&category={{ category }}&difficulty={{ difficulty }}">{{ p }}</a>
+                                    </li>
+                                    {% endfor %}
+                                    {% if page < total_pages %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page+1 }}&search={{ search }}&category={{ category }}&difficulty={{ difficulty }}">Next <i class="bi bi-chevron-right"></i></a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-inbox display-1 text-muted"></i>
+                                <h5 class="mt-3 text-secondary">No questions found</h5>
+                                <p class="text-muted">Add your first question to the bank using the button above.</p>
+                                <button class="btn btn-primary rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                                    <i class="bi bi-plus-circle me-1"></i> Create question
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Question Modal (polished) -->
+    <div class="modal fade" id="addQuestionModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="/admin/add_question">
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill me-2 text-primary"></i>Create New Question</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Question Text <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="question" rows="3" required placeholder="Enter the question content..."></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="category" required>
+                                        <option value="Python">🐍 Python</option>
+                                        <option value="Java">☕ Java</option>
+                                        <option value="JavaScript">⚡ JavaScript</option>
+                                        <option value="SQL">🗄️ SQL</option>
+                                        <option value="Data Structures">🌲 Data Structures</option>
+                                        <option value="Algorithms">⚙️ Algorithms</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Difficulty Level <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="difficulty" required>
+                                        <option value="easy">🌱 Easy</option>
+                                        <option value="medium">🔥 Medium</option>
+                                        <option value="hard">💎 Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Options (One per line) <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="options" rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3&#10;Option 4" required></textarea>
+                            <div class="form-text">Enter each possible answer on a new line.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Correct Answer <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="correct_answer" required placeholder="Exact match of the correct option text">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Explanation (Optional)</label>
+                            <textarea class="form-control" name="explanation" rows="2" placeholder="Explain reasoning behind the correct answer..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4"><i class="bi bi-save me-1"></i> Save Question</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function editQuestion(questionId) {
+            if(questionId) {
+                window.location.href = `/admin/edit_question/${questionId}`;
+            } else {
+                alert('Invalid question ID');
+            }
+        }
+        
+        function deleteQuestion(questionId) {
+            if (confirm('⚠️ Permanently delete this question? It will be removed from all assessments.')) {
+                fetch(`/admin/delete_question/${questionId}`, {method: 'DELETE'})
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // gentle reload with fade effect simulation
+                            location.reload();
+                        } else {
+                            alert('❌ Error: Could not delete question.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Network error. Please try again.');
+                    });
+            }
+        }
+
+        // auto-focus search on filter for better UX (optional)
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchField = document.querySelector('input[name="search"]');
+            if(searchField && window.innerWidth > 768) searchField.focus();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Jobs - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Job Cards */
+        .job-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            height: 100%;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .job-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .job-body {
+            padding: 20px;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .status-closed {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .skill-tag {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            color: #495057;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        /* Table Styles */
+        .job-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .job-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .job-table th, .job-table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .filter-input {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .job-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .job-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/company_profile">
+                            <i class="bi bi-building"></i> Company
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/post_job">
+                            <i class="bi bi-plus-circle"></i> Post Job
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/recruiter/jobs">
+                            <i class="bi bi-briefcase"></i> Manage Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/candidates">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/interviews">
+                            <i class="bi bi-calendar"></i> Interviews
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Manage Jobs</h2>
+                    <p>View, edit, and manage all your job postings in one place</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="/recruiter/post_job" class="btn btn-light">
+                        <i class="bi bi-plus-circle"></i> Post New Job
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="0">
+                <div class="stats-card">
+                    <i class="bi bi-briefcase" style="font-size: 2rem; color: #667eea;"></i>
+                    <div class="stats-number">{{ jobs|length }}</div>
+                    <div class="text-muted">Total Jobs</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745;"></i>
+                    <div class="stats-number" id="activeJobsCount">0</div>
+                    <div class="text-muted">Active Jobs</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <i class="bi bi-x-circle" style="font-size: 2rem; color: #dc3545;"></i>
+                    <div class="stats-number" id="closedJobsCount">0</div>
+                    <div class="text-muted">Closed Jobs</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card">
+                    <i class="bi bi-people" style="font-size: 2rem; color: #ffc107;"></i>
+                    <div class="stats-number" id="totalApplications">0</div>
+                    <div class="text-muted">Total Applications</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Section -->
+        <div class="filter-section" data-aos="fade-up">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control filter-input border-start-0" placeholder="Search jobs by title or company...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <select id="statusFilter" class="form-select filter-input">
+                        <option value="all">All Status</option>
+                        <option value="active">Active Jobs</option>
+                        <option value="closed">Closed Jobs</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <select id="locationFilter" class="form-select filter-input">
+                        <option value="all">All Locations</option>
+                        <option value="Remote">Remote</option>
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="sortFilter" class="form-select filter-input">
+                        <option value="recent">Latest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="applications">Most Applications</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#active">Active Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#closed">Closed Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#all">All Jobs</a>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <!-- Active Jobs Tab -->
+                    <div class="tab-pane fade show active" id="active">
+                        <div class="row" id="activeJobsContainer">
+                            <!-- Jobs will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Closed Jobs Tab -->
+                    <div class="tab-pane fade" id="closed">
+                        <div class="row" id="closedJobsContainer">
+                            <!-- Jobs will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- All Jobs Tab -->
+                    <div class="tab-pane fade" id="all">
+                        <div class="table-responsive">
+                            <table class="table job-table" id="allJobsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Location</th>
+                                        <th>Applications</th>
+                                        <th>Status</th>
+                                        <th>Posted Date</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                <tbody id="allJobsTableBody">
+                                    <!-- Jobs will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No Results Message -->
+                <div id="noResults" class="empty-state" style="display: none;">
+                    <i class="bi bi-inbox"></i>
+                    <h4>No jobs found</h4>
+                    <p class="text-muted">Try adjusting your search or filter criteria</p>
+                    <button class="btn btn-primary" onclick="resetFilters()">
+                        <i class="bi bi-arrow-repeat"></i> Reset Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Job data from server
+        const jobsData = {{ jobs|tojson }};
+        
+        // Calculate statistics
+        let activeJobs = jobsData.filter(job => job.status === 'active' || !job.status);
+        let closedJobs = jobsData.filter(job => job.status === 'closed');
+        let totalApplications = jobsData.reduce((sum, job) => sum + (job.applications_count || 0), 0);
+        
+        document.getElementById('activeJobsCount').innerText = activeJobs.length;
+        document.getElementById('closedJobsCount').innerText = closedJobs.length;
+        document.getElementById('totalApplications').innerText = totalApplications;
+        
+        // Function to render job card
+        function renderJobCard(job, isActive) {
+            return `
+                <div class="col-md-6 mb-4 job-item" data-job-title="${job.title}" data-job-company="${job.company}" data-status="${job.status}" data-location="${job.location}">
+                    <div class="card job-card">
+                        <div class="job-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5>${job.title}</h5>
+                                    <h6 class="text-muted">${job.company}</h6>
+                                </div>
+                                <span class="status-badge ${isActive ? 'status-active' : 'status-closed'}">${isActive ? 'Active' : 'Closed'}</span>
+                            </div>
+                        </div>
+                        <div class="job-body">
+                            <p class="mt-0">${job.description ? job.description.substring(0, 150) : ''}${job.description && job.description.length > 150 ? '...' : ''}</p>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <small><i class="bi bi-geo-alt"></i> ${job.location || 'N/A'}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small><i class="bi bi-briefcase"></i> ${job.experience_level || 'N/A'}</small>
+                                </div>
+                                <div class="col-md-6 mt-1">
+                                    <small><i class="bi bi-cash"></i> ${job.salary_range || 'N/A'}</small>
+                                </div>
+                                <div class="col-md-6 mt-1">
+                                    <small><i class="bi bi-star"></i> Min Score: ${job.min_score || 0}%</small>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <strong>Skills:</strong><br>
+                                ${job.skills_required ? job.skills_required.map(skill => `<span class="skill-tag">${skill}</span>`).join('') : ''}
+                            </div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <span class="badge bg-primary">Applications: ${job.applications_count || 0}</span>
+                                    </div>
+                                    <div>
+                                        <a href="/recruiter/applications/${job._id}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-people"></i> View
+                                        </a>
+                                        ${isActive ? `
+                                            <a href="/recruiter/edit_job/${job._id}" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                            <a href="/recruiter/close_job/${job._id}" class="btn btn-sm btn-danger" onclick="return confirm('Close this job?')">
+                                                <i class="bi bi-x-circle"></i> Close
+                                            </a>
+                                        ` : `
+                                            <a href="/recruiter/delete_job/${job._id}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this job permanently?')">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </a>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-muted">
+                                <small>Posted on: ${job.posted_date ? new Date(job.posted_date).toISOString().split('T')[0] : 'N/A'}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render active jobs
+        const activeContainer = document.getElementById('activeJobsContainer');
+        if (activeJobs.length > 0) {
+            activeContainer.innerHTML = activeJobs.map(job => renderJobCard(job, true)).join('');
+        } else {
+            activeContainer.innerHTML = '<div class="col-12"><div class="empty-state"><i class="bi bi-briefcase"></i><h4>No Active Jobs</h4><p class="text-muted">Post your first job to start hiring</p><a href="/recruiter/post_job" class="btn btn-primary">Post a Job</a></div></div>';
+        }
+        
+        // Render closed jobs
+        const closedContainer = document.getElementById('closedJobsContainer');
+        if (closedJobs.length > 0) {
+            closedContainer.innerHTML = closedJobs.map(job => renderJobCard(job, false)).join('');
+        } else {
+            closedContainer.innerHTML = '<div class="col-12"><div class="empty-state"><i class="bi bi-archive"></i><h4>No Closed Jobs</h4><p class="text-muted">Jobs you close will appear here</p></div></div>';
+        }
+        
+        // Render all jobs table
+        const tableBody = document.getElementById('allJobsTableBody');
+        tableBody.innerHTML = jobsData.map(job => `
+            <tr>
+                <td>
+                    <strong>${job.title}</strong><br>
+                    <small class="text-muted">${job.company}</small>
+                </td>
+                <td><i class="bi bi-geo-alt"></i> ${job.location || 'N/A'}</td>
+                <td><span class="badge bg-primary">${job.applications_count || 0}</span></td>
+                <td>
+                    <span class="status-badge ${job.status === 'active' || !job.status ? 'status-active' : 'status-closed'}">
+                        ${job.status === 'active' || !job.status ? 'Active' : 'Closed'}
+                    </span>
+                </td>
+                <td>${job.posted_date ? new Date(job.posted_date).toISOString().split('T')[0] : 'N/A'}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="/recruiter/applications/${job._id}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-people"></i>
+                        </a>
+                        ${job.status === 'active' || !job.status ? `
+                            <a href="/recruiter/edit_job/${job._id}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="/recruiter/close_job/${job._id}" class="btn btn-sm btn-danger" onclick="return confirm('Close this job?')">
+                                <i class="bi bi-x-circle"></i>
+                            </a>
+                        ` : `
+                            <a href="/recruiter/delete_job/${job._id}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this job?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        `}
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Filter functionality
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const locationFilter = document.getElementById('locationFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const noResults = document.getElementById('noResults');
+        
+        function filterAndDisplay() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const status = statusFilter.value;
+            const location = locationFilter.value;
+            const sortBy = sortFilter.value;
+            
+            let filtered = [...jobsData];
+            
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(job => 
+                    job.title.toLowerCase().includes(searchTerm) || 
+                    job.company.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply status filter
+            if (status !== 'all') {
+                filtered = filtered.filter(job => 
+                    (status === 'active' && (job.status === 'active' || !job.status)) ||
+                    (status === 'closed' && job.status === 'closed')
+                );
+            }
+            
+            // Apply location filter
+            if (location !== 'all') {
+                filtered = filtered.filter(job => job.location === location);
+            }
+            
+            // Apply sorting
+            if (sortBy === 'recent') {
+                filtered.sort((a, b) => new Date(b.posted_date) - new Date(a.posted_date));
+            } else if (sortBy === 'oldest') {
+                filtered.sort((a, b) => new Date(a.posted_date) - new Date(b.posted_date));
+            } else if (sortBy === 'applications') {
+                filtered.sort((a, b) => (b.applications_count || 0) - (a.applications_count || 0));
+            }
+            
+            // Update display
+            const activeFiltered = filtered.filter(job => job.status === 'active' || !job.status);
+            const closedFiltered = filtered.filter(job => job.status === 'closed');
+            
+            document.getElementById('activeJobsContainer').innerHTML = activeFiltered.length > 0 ? 
+                activeFiltered.map(job => renderJobCard(job, true)).join('') :
+                '<div class="col-12"><div class="empty-state"><i class="bi bi-briefcase"></i><h4>No matching active jobs</h4></div></div>';
+            
+            document.getElementById('closedJobsContainer').innerHTML = closedFiltered.length > 0 ? 
+                closedFiltered.map(job => renderJobCard(job, false)).join('') :
+                '<div class="col-12"><div class="empty-state"><i class="bi bi-archive"></i><h4>No matching closed jobs</h4></div></div>';
+            
+            document.getElementById('allJobsTableBody').innerHTML = filtered.map(job => `
+                <tr>
+                    <td><strong>${job.title}</strong><br><small class="text-muted">${job.company}</small></td>
+                    <td><i class="bi bi-geo-alt"></i> ${job.location || 'N/A'}</td>
+                    <td><span class="badge bg-primary">${job.applications_count || 0}</span></td>
+                    <td><span class="status-badge ${job.status === 'active' || !job.status ? 'status-active' : 'status-closed'}">${job.status === 'active' || !job.status ? 'Active' : 'Closed'}</span></td>
+                    <td>${job.posted_date ? new Date(job.posted_date).toISOString().split('T')[0] : 'N/A'}</td>
+                    <td>...</td>
+                </tr>
+            `).join('');
+            
+            // Show/hide no results
+            if (filtered.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+        
+        function resetFilters() {
+            searchInput.value = '';
+            statusFilter.value = 'all';
+            locationFilter.value = 'all';
+            sortFilter.value = 'recent';
+            filterAndDisplay();
+        }
+        
+        // Add event listeners
+        searchInput.addEventListener('input', filterAndDisplay);
+        statusFilter.addEventListener('change', filterAndDisplay);
+        locationFilter.addEventListener('change', filterAndDisplay);
+        sortFilter.addEventListener('change', filterAndDisplay);
+    </script>
+</body>
+</html>

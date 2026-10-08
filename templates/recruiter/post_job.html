@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Form Card */
+        .form-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .form-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border: none;
+        }
+        
+        .card-header h4 {
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+        
+        .card-header p {
+            margin-bottom: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Skill Badge Input */
+        .skill-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .skill-badge-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .skill-badge-item i {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-badge-item i:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Score Slider */
+        .score-slider {
+            padding: 10px 0;
+        }
+        
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* Preview Card */
+        .preview-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background: #5a6268;
+        }
+        
+        .btn-add-skill {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-skill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .skill-input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        /* Character Counter */
+        .char-counter {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        /* Loading State */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            right: 20px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Job Type Badges */
+        .job-type-option {
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .job-type-option:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .job-type-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/recruiter/post_job">
+                            <i class="bi bi-plus-circle"></i> Post Job
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/jobs">
+                            <i class="bi bi-briefcase"></i> Manage Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Post a New Job</h2>
+                    <p>Fill in the details to find the best candidates for your organization</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-megaphone" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="form-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <h4><i class="bi bi-pencil-square"></i> Job Details</h4>
+                        <p>Complete all required fields to attract the right candidates</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="/recruiter/post_job" id="jobForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Job Title *</label>
+                                    <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., Senior Software Engineer">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Company Name *</label>
+                                    <input type="text" class="form-control" id="company" name="company" required placeholder="Your company name">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Location *</label>
+                                    <input type="text" class="form-control" id="location" name="location" required placeholder="e.g., New York, NY or Remote">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Job Type</label>
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-type="Full-time">
+                                                <i class="bi bi-briefcase"></i>
+                                                <div>Full-time</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-type="Part-time">
+                                                <i class="bi bi-clock"></i>
+                                                <div>Part-time</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-type="Contract">
+                                                <i class="bi bi-file-text"></i>
+                                                <div>Contract</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="job_type" id="job_type" value="Full-time">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Work Mode</label>
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-mode="Remote">
+                                                <i class="bi bi-wifi"></i>
+                                                <div>Remote</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-mode="On-site">
+                                                <i class="bi bi-building"></i>
+                                                <div>On-site</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="job-type-option" data-mode="Hybrid">
+                                                <i class="bi bi-arrow-left-right"></i>
+                                                <div>Hybrid</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="work_mode" id="work_mode" value="Remote">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Experience Level *</label>
+                                    <select class="form-select" id="experience_level" name="experience_level" required>
+                                        <option value="">Select Experience Level</option>
+                                        <option value="Entry Level">🎓 Entry Level (0-2 years)</option>
+                                        <option value="Mid Level">📈 Mid Level (3-5 years)</option>
+                                        <option value="Senior Level">🏆 Senior Level (6-9 years)</option>
+                                        <option value="Expert">⭐ Expert (10+ years)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Salary Range</label>
+                                    <input type="text" class="form-control" id="salary_range" name="salary_range" placeholder="e.g., $80,000 - $100,000">
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Minimum Skill Score Required *</label>
+                                    <div class="score-slider">
+                                        <input type="range" class="form-range" id="min_score" name="min_score" min="0" max="100" step="5" value="60">
+                                        <div class="text-center mt-2">
+                                            <span class="score-value" id="scoreValue">60</span>%
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Candidates must have at least this overall skill score to be recommended</small>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Required Skills *</label>
+                                    <div id="skills-container" class="skill-input-group mb-2">
+                                        <div class="input-group" style="flex: 1;">
+                                            <input type="text" class="form-control" id="skillInput" placeholder="e.g., Python, JavaScript, React">
+                                            <button type="button" class="btn btn-primary" onclick="addSkill()">Add</button>
+                                        </div>
+                                    </div>
+                                    <div id="skills-badges" class="d-flex flex-wrap gap-2 mt-2"></div>
+                                    <small class="text-muted">Add all required skills for this position</small>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Job Description *</label>
+                                    <textarea class="form-control" id="description" name="description" rows="5" required placeholder="Describe the role, responsibilities, and what makes this opportunity exciting..."></textarea>
+                                    <div class="char-counter text-muted">
+                                        <span id="descCharCount">0</span> characters
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Requirements & Qualifications *</label>
+                                    <textarea class="form-control" id="requirements" name="requirements" rows="4" required placeholder="• Bachelor's degree in Computer Science or related field&#10;• 3+ years of experience in software development&#10;• Strong knowledge of Python and Django&#10;• Excellent problem-solving skills"></textarea>
+                                    <small class="text-muted">List specific requirements, qualifications, and responsibilities (one per line recommended)</small>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Benefits & Perks</label>
+                                    <textarea class="form-control" id="benefits" name="benefits" rows="3" placeholder="• Competitive salary and equity&#10;• Health, dental, and vision insurance&#10;• Flexible working hours&#10;• Professional development budget"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i class="bi bi-send"></i> Post Job
+                                </button>
+                                <a href="/recruiter/dashboard" class="btn btn-secondary ms-2">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Live Preview -->
+                <div class="preview-card mt-4" data-aos="fade-up" data-aos-delay="100">
+                    <h6><i class="bi bi-eye"></i> Live Preview</h6>
+                    <div class="mt-3">
+                        <h5 id="previewTitle">Job Title</h5>
+                        <p class="text-muted" id="previewCompany">Company Name • <span id="previewLocation">Location</span></p>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-primary" id="previewType">Full-time</span>
+                            <span class="badge bg-info" id="previewMode">Remote</span>
+                            <span class="badge bg-warning" id="previewExp">Entry Level</span>
+                        </div>
+                        <div id="previewSkills" class="d-flex flex-wrap gap-1 mb-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Skills management
+        let skills = [];
+        
+        function updateSkillsDisplay() {
+            const container = document.getElementById('skills-badges');
+            container.innerHTML = '';
+            skills.forEach((skill, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'skill-badge-item';
+                badge.innerHTML = `${skill} <i class="bi bi-x-circle" onclick="removeSkill(${index})"></i>`;
+                container.appendChild(badge);
+            });
+            
+            // Update hidden inputs
+            const hiddenContainer = document.getElementById('skills-container');
+            hiddenContainer.querySelectorAll('input[name="skills_required"]').forEach(el => el.remove());
+            skills.forEach(skill => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'skills_required';
+                input.value = skill;
+                hiddenContainer.appendChild(input);
+            });
+            
+            // Update preview
+            const previewSkills = document.getElementById('previewSkills');
+            previewSkills.innerHTML = skills.map(skill => `<span class="badge bg-secondary">${skill}</span>`).join('');
+        }
+        
+        function addSkill() {
+            const input = document.getElementById('skillInput');
+            const skill = input.value.trim();
+            if (skill && !skills.includes(skill)) {
+                skills.push(skill);
+                updateSkillsDisplay();
+                input.value = '';
+            } else if (skills.includes(skill)) {
+                alert('Skill already added!');
+            }
+        }
+        
+        function removeSkill(index) {
+            skills.splice(index, 1);
+            updateSkillsDisplay();
+        }
+        
+        // Score slider
+        const scoreSlider = document.getElementById('min_score');
+        const scoreValue = document.getElementById('scoreValue');
+        scoreSlider.addEventListener('input', function() {
+            scoreValue.innerText = this.value;
+        });
+        
+        // Job type selection
+        document.querySelectorAll('[data-type]').forEach(el => {
+            el.addEventListener('click', function() {
+                document.querySelectorAll('[data-type]').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('job_type').value = this.dataset.type;
+                document.getElementById('previewType').innerText = this.dataset.type;
+            });
+        });
+        
+        // Work mode selection
+        document.querySelectorAll('[data-mode]').forEach(el => {
+            el.addEventListener('click', function() {
+                document.querySelectorAll('[data-mode]').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('work_mode').value = this.dataset.mode;
+                document.getElementById('previewMode').innerText = this.dataset.mode;
+            });
+        });
+        
+        // Live preview updates
+        const titleInput = document.getElementById('title');
+        const companyInput = document.getElementById('company');
+        const locationInput = document.getElementById('location');
+        const expSelect = document.getElementById('experience_level');
+        
+        titleInput.addEventListener('input', function() {
+            document.getElementById('previewTitle').innerText = this.value || 'Job Title';
+        });
+        
+        companyInput.addEventListener('input', function() {
+            document.getElementById('previewCompany').innerHTML = (this.value || 'Company Name') + ' • <span id="previewLocation">' + (locationInput.value || 'Location') + '</span>';
+        });
+        
+        locationInput.addEventListener('input', function() {
+            document.getElementById('previewCompany').innerHTML = (companyInput.value || 'Company Name') + ' • <span id="previewLocation">' + (this.value || 'Location') + '</span>';
+        });
+        
+        expSelect.addEventListener('change', function() {
+            const options = {
+                'Entry Level': '🎓 Entry Level',
+                'Mid Level': '📈 Mid Level',
+                'Senior Level': '🏆 Senior Level',
+                'Expert': '⭐ Expert'
+            };
+            document.getElementById('previewExp').innerHTML = options[this.value] || 'Entry Level';
+        });
+        
+        // Character counters
+        const description = document.getElementById('description');
+        const descCharCount = document.getElementById('descCharCount');
+        
+        description.addEventListener('input', function() {
+            descCharCount.innerText = this.value.length;
+        });
+        
+        // Default selections
+        document.querySelector('[data-type="Full-time"]').click();
+        document.querySelector('[data-mode="Remote"]').click();
+        
+        // Enter key for skills
+        document.getElementById('skillInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill();
+            }
+        });
+        
+        // Form submission with loading state
+        const form = document.getElementById('jobForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', function(e) {
+            if (skills.length === 0) {
+                e.preventDefault();
+                alert('Please add at least one required skill');
+                return;
+            }
+            
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Posting...';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-loading');
+        });
+    </script>
+</body>
+</html>

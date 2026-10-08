@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Studio | Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Google Fonts for refined typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(145deg, #f4f7fc 0%, #eef2f8 100%);
+            min-height: 100vh;
+        }
+        
+        /* Modern navbar with glass effect */
+        .navbar {
+            background: linear-gradient(98deg, #0B2B3F 0%, #0A1E2C 100%);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            padding: 0.8rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #FFFFFF, #B8E1FC);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            font-weight: 500;
+            margin: 0 4px;
+            border-radius: 40px;
+            padding: 0.5rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover,
+        .navbar-dark .navbar-nav .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
+        
+        /* main container animation */
+        .container.mt-4 {
+            animation: floatUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* card modern styling */
+        .card {
+            border: none;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(0px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem 1.8rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        /* Assessment card styling */
+        .assessment-card {
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            margin-bottom: 24px;
+            border-radius: 28px;
+            background: white;
+            border: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04), 0 0 0 1px #eef2fa;
+            overflow: hidden;
+        }
+        
+        .assessment-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 24px 40px -12px rgba(0,0,0,0.2), 0 0 0 1px #dfe8f2;
+        }
+        
+        .assessment-card .card-body {
+            padding: 1.6rem;
+        }
+        
+        .assessment-title {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #1f4e6e, #0f2f42);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.2px;
+        }
+        
+        .badge-category {
+            background: #eef3fc;
+            color: #1e5f8e;
+            border-radius: 60px;
+            padding: 5px 14px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        .assessment-meta {
+            background: #f8fafd;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 12px 0;
+        }
+        
+        /* Question card (dynamic in modal) */
+        .question-card-dynamic {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.2rem;
+            margin-bottom: 1.4rem;
+            border: 1px solid #e9f0f5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+        
+        .question-card-dynamic:hover {
+            border-color: #cbdde9;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.04);
+        }
+        
+        /* Modal polish */
+        .modal-content {
+            border-radius: 36px;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: #fefefe;
+            border-bottom: 1px solid #edf2f7;
+            padding: 1.4rem 1.8rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #edf2f7;
+            padding: 1.2rem 1.8rem;
+            background: #fbfdff;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #e2ecf3;
+            padding: 0.7rem 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #2c7cb6;
+            box-shadow: 0 0 0 4px rgba(44,124,182,0.12);
+        }
+        
+        /* Buttons modern */
+        .btn-primary {
+            background: linear-gradient(105deg, #1c5d8c, #124263);
+            border: none;
+            border-radius: 60px;
+            padding: 0.55rem 1.6rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+            background: linear-gradient(105deg, #236f9e, #154d6e);
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 60px;
+            border: 1px solid #cfdfea;
+            font-weight: 500;
+        }
+        
+        .btn-sm-icon {
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            font-weight: 500;
+        }
+        
+        /* empty state */
+        .empty-assessment {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: #fafdff;
+            border-radius: 40px;
+        }
+        
+        hr {
+            opacity: 0.4;
+            margin: 1rem 0;
+        }
+        
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2eaf1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b8cfdf;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard"><i class="bi bi-motherboard-fill me-2"></i>Smart Education · Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/users"><i class="bi bi-people me-1"></i>Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/question_bank"><i class="bi bi-journal me-1"></i>Question Bank</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/admin/assessments"><i class="bi bi-pencil-square me-1"></i>Assessments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/analytics"><i class="bi bi-graph-up me-1"></i>Analytics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4 mb-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                    <div>
+                        <h2 class="fw-bold" style="color: #1f415b;"><i class="bi bi-stack me-2 text-primary"></i>Assessment Studio</h2>
+                        <p class="text-muted mt-1 mb-0">Design, manage, and deploy knowledge checks</p>
+                    </div>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm" onclick="openCreateModal()">
+                        <i class="bi bi-plus-circle me-2"></i> New Assessment
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
+                        <span><i class="bi bi-files me-2 text-info"></i>All Assessments</span>
+                        <span class="badge bg-light text-dark rounded-pill px-3 py-2">{{ assessments|length if assessments else 0 }} total</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            {% if assessments %}
+                                {% for assessment in assessments %}
+                                <div class="col-md-6 col-xl-6 mb-4">
+                                    <div class="assessment-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="assessment-title">{{ assessment.title }}</div>
+                                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="deleteAssessment('{{ assessment._id }}')">
+                                                    <i class="bi bi-trash3 me-1"></i> Delete
+                                                </button>
+                                            </div>
+                                            <p class="text-secondary mt-2 mb-3" style="font-size:0.9rem; line-height:1.4;">
+                                                {{ assessment.description[:110] }}{% if assessment.description|length > 110 %}...{% endif %}
+                                            </p>
+                                            <div class="assessment-meta d-flex flex-wrap gap-3 align-items-center">
+                                                <div><i class="bi bi-tag-fill text-primary me-1"></i> <strong>{{ assessment.category }}</strong></div>
+                                                <div><i class="bi bi-clock-history me-1"></i> {{ assessment.duration }} min</div>
+                                                <div><i class="bi bi-question-diamond-fill me-1"></i> {{ assessment.questions|length }} questions</div>
+                                            </div>
+                                            <div class="mt-3 d-flex gap-2">
+                                                <span class="badge-category"><i class="bi bi-eye"></i> Ready to assign</span>
+                                                <span class="badge-category"><i class="bi bi-calendar-check"></i> Active</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-md-12">
+                                    <div class="empty-assessment">
+                                        <i class="bi bi-inboxes display-1 text-muted"></i>
+                                        <h5 class="mt-3 fw-semibold">No assessments yet</h5>
+                                        <p class="text-muted">Create your first assessment to evaluate learners.</p>
+                                        <button class="btn btn-primary rounded-pill mt-2 px-4" onclick="openCreateModal()">
+                                            <i class="bi bi-plus-circle me-1"></i> Create Assessment
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CREATE ASSESSMENT MODAL (Enhanced UI) -->
+    <div class="modal fade" id="createAssessmentModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <form method="POST" action="/admin/assessments" id="assessmentForm">
+                    <div class="modal-header bg-light border-0">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill me-2 text-primary"></i>Build New Assessment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 70vh;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Assessment Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Python Fundamentals Quiz" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="category" name="category" placeholder="e.g., Python, Data Science" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="Describe the assessment's goal, topics covered..." required></textarea>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold">Duration (minutes) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="duration" name="duration" value="30" min="5" max="240" required>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <label class="form-label fw-semibold mb-0"><i class="bi bi-list-check me-1"></i> Question Set</label>
+                                <button type="button" class="btn btn-success rounded-pill btn-sm px-3" onclick="addQuestion()">
+                                    <i class="bi bi-plus-circle me-1"></i> Add Question
+                                </button>
+                            </div>
+                            <div id="questions-container" class="pb-2"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5"><i class="bi bi-save2 me-1"></i> Publish Assessment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let questionCount = 0;
+        
+        // open modal with fresh state
+        function openCreateModal() {
+            const modalElement = document.getElementById('createAssessmentModal');
+            const modal = new bootstrap.Modal(modalElement, { backdrop: 'static', keyboard: true });
+            
+            // Reset form fields
+            document.getElementById('title').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('duration').value = '30';
+            
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questionCount = 0;
+            addQuestion(); // start with 1 question block
+            modal.show();
+        }
+        
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const qId = questionCount;
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-card-dynamic';
+            questionDiv.id = `question-block-${qId}`;
+            questionDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><span class="bg-light p-1 px-3 rounded-pill me-2">Q${qId + 1}</span> <span class="text-secondary">Question details</span></h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" onclick="removeQuestion(${qId})">
+                        <i class="bi bi-x-lg"></i> Remove
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Question Text *</label>
+                    <input type="text" class="form-control" name="question_${qId}" placeholder="Enter the question..." required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Options (One per line) *</label>
+                    <textarea class="form-control" name="options_${qId}" rows="3" placeholder="Option A&#10;Option B&#10;Option C&#10;Option D" required></textarea>
+                    <div class="form-text small text-muted">Separate each answer choice by a new line.</div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold small">Correct Answer *</label>
+                    <input type="text" class="form-control" name="correct_answer_${qId}" placeholder="Exact text of the correct option" required>
+                </div>
+                <hr class="mt-3">
+            `;
+            container.appendChild(questionDiv);
+            questionCount++;
+            updateHiddenQuestionCount();
+        }
+        
+        function removeQuestion(id) {
+            const targetBlock = document.getElementById(`question-block-${id}`);
+            if (targetBlock) {
+                targetBlock.remove();
+                renumberQuestionBlocks();
+            }
+            updateHiddenQuestionCount();
+        }
+        
+        function renumberQuestionBlocks() {
+            const container = document.getElementById('questions-container');
+            const blocks = container.querySelectorAll('.question-card-dynamic');
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                block.id = `question-block-${i}`;
+                // update header numbering
+                const headerSpan = block.querySelector('h6 span');
+                if (headerSpan) headerSpan.innerHTML = `Q${i + 1}`;
+                
+                // update input names
+                const inputs = block.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    const oldName = input.getAttribute('name');
+                    if (oldName) {
+                        const baseName = oldName.replace(/_\d+$/, '');
+                        const newName = `${baseName}_${i}`;
+                        input.setAttribute('name', newName);
+                    }
+                });
+                
+                // update remove button onclick to new index
+                const removeBtn = block.querySelector('.btn-outline-danger');
+                if (removeBtn) {
+                    removeBtn.setAttribute('onclick', `removeQuestion(${i})`);
+                }
+            }
+            questionCount = blocks.length;
+        }
+        
+        function updateHiddenQuestionCount() {
+            let hiddenField = document.getElementById('num_questions_hidden');
+            if (!hiddenField) {
+                hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.id = 'num_questions_hidden';
+                hiddenField.name = 'num_questions';
+                document.getElementById('assessmentForm').appendChild(hiddenField);
+            }
+            hiddenField.value = questionCount;
+        }
+        
+        // delete assessment with confirmation + better UX
+        function deleteAssessment(assessmentId) {
+            if (confirm('⚠️ Permanently delete this assessment? This will remove all linked data.')) {
+                fetch(`/admin/delete_assessment/${assessmentId}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('❌ Failed to delete assessment. Please try again.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Network error while deleting.');
+                    });
+            }
+        }
+        
+        // Ensure that form submission has at least one question
+        document.getElementById('assessmentForm')?.addEventListener('submit', function(e) {
+            const container = document.getElementById('questions-container');
+            const questionBlocks = container.querySelectorAll('.question-card-dynamic');
+            if (questionBlocks.length === 0) {
+                e.preventDefault();
+                alert('❌ Please add at least one question to the assessment.');
+                return false;
+            }
+            
+            // basic validation: check each question block has required fields filled
+            let valid = true;
+            questionBlocks.forEach((block, idx) => {
+                const qText = block.querySelector(`input[name^="question_"]`);
+                const options = block.querySelector(`textarea[name^="options_"]`);
+                const correct = block.querySelector(`input[name^="correct_answer_"]`);
+                if (!qText?.value.trim() || !options?.value.trim() || !correct?.value.trim()) {
+                    valid = false;
+                    block.style.border = '1px solid #dc3545';
+                    setTimeout(() => { block.style.border = ''; }, 1500);
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('⚠️ Please fill in all question fields (text, options, correct answer).');
+            }
+        });
+        
+        // Initialize hidden counter on page load (if any form prefill later)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!document.getElementById('num_questions_hidden')) {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.id = 'num_questions_hidden';
+                hidden.name = 'num_questions';
+                const form = document.getElementById('assessmentForm');
+                if (form) form.appendChild(hidden);
+            }
+            updateHiddenQuestionCount();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

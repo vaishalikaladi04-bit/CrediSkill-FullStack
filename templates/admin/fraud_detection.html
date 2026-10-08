@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection - Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        
+        .fraud-card {
+            border-left: 4px solid;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .fraud-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .fraud-high { border-left-color: #dc3545; }
+        .fraud-medium { border-left-color: #ffc107; }
+        .fraud-low { border-left-color: #17a2b8; }
+        
+        .rule-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .rule-card:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .fraud-card .row > div {
+                margin-bottom: 10px;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fraud-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .severity-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .severity-high {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .severity-medium {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: white;
+        }
+        
+        .severity-low {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="bi bi-shield-shield"></i> Smart Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/question_bank">
+                            <i class="bi bi-database"></i> Question Bank
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/assessments">
+                            <i class="bi bi-file-text"></i> Assessments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/fraud_detection">
+                            <i class="bi bi-shield"></i> Fraud
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/analytics">
+                            <i class="bi bi-bar-chart"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Fraud Detection & Assessment Integrity</h2>
+                    <p>Monitor suspicious activities and maintain assessment integrity</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-shield-check" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="0">
+                <div class="stats-card" style="border-top: 4px solid #dc3545;">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i>
+                    <div class="stats-number text-danger">{{ stats.high_risk|default(0) }}</div>
+                    <div class="text-muted">High Risk Alerts</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card" style="border-top: 4px solid #ffc107;">
+                    <i class="bi bi-exclamation-circle" style="font-size: 2rem; color: #ffc107;"></i>
+                    <div class="stats-number text-warning">{{ stats.medium_risk|default(0) }}</div>
+                    <div class="text-muted">Medium Risk Alerts</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card" style="border-top: 4px solid #17a2b8;">
+                    <i class="bi bi-info-circle" style="font-size: 2rem; color: #17a2b8;"></i>
+                    <div class="stats-number text-info">{{ stats.low_risk|default(0) }}</div>
+                    <div class="text-muted">Low Risk Alerts</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card" style="border-top: 4px solid #28a745;">
+                    <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745;"></i>
+                    <div class="stats-number text-success">{{ stats.resolved|default(0) }}</div>
+                    <div class="text-muted">Resolved Alerts</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detection Rules -->
+        <div class="card mb-4" data-aos="fade-up">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-sliders2 text-primary"></i> Fraud Detection Rules</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_speed" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-speedometer2"></i> Unusual Speed
+                                </label>
+                                <div class="small text-muted mt-1">Completed assessment too fast</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_tab_switch" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-window"></i> Tab Switching
+                                </label>
+                                <div class="small text-muted mt-1">Detect tab changes during assessment</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_copy_paste" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-files"></i> Copy/Paste Detection
+                                </label>
+                                <div class="small text-muted mt-1">Monitor clipboard usage</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_ip_mismatch" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-wifi"></i> IP Mismatch
+                                </label>
+                                <div class="small text-muted mt-1">Different IP addresses</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_identical_answers" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-files"></i> Identical Answers
+                                </label>
+                                <div class="small text-muted mt-1">Same answers as other students</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_time_pattern" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-clock-history"></i> Time Pattern Analysis
+                                </label>
+                                <div class="small text-muted mt-1">Unusual answer time patterns</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_device_change" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-phone"></i> Device Change
+                                </label>
+                                <div class="small text-muted mt-1">Multiple devices used</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-card">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="detect_location_change" checked>
+                                <label class="form-check-label">
+                                    <i class="bi bi-geo-alt"></i> Location Change
+                                </label>
+                                <div class="small text-muted mt-1">Suspicious location changes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <button class="btn btn-save" onclick="saveDetectionRules()">
+                        <i class="bi bi-save"></i> Save Detection Rules
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Alerts -->
+        <div class="card" data-aos="fade-up">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle text-warning"></i> Active Fraud Alerts</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="refreshAlerts()">
+                        <i class="bi bi-arrow-repeat"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="resolveAllAlerts()">
+                        <i class="bi bi-check-all"></i> Resolve All
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if alerts %}
+                    {% for alert in alerts %}
+                    <div class="fraud-card fraud-{{ alert.severity }} card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <span class="severity-badge severity-{{ alert.severity }}">
+                                        <i class="bi bi-{% if alert.severity == 'high' %}exclamation-triangle{% elif alert.severity == 'medium' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                                        {{ alert.severity|upper }} RISK
+                                    </span>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                            {{ alert.student_name[0]|upper }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ alert.student_name }}</strong><br>
+                                            <small class="text-muted">{{ alert.email }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>{{ alert.alert_type }}</strong><br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-file-text"></i> {{ alert.assessment_title }}
+                                    </small>
+                                </div>
+                                <div class="col-md-2">
+                                    <small>
+                                        <i class="bi bi-calendar"></i> {{ alert.date.strftime('%Y-%m-%d %H:%M') }}
+                                    </small><br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-percent"></i> Score: {{ "%.2f"|format(alert.score) }}%
+                                    </small>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-info" onclick="viewDetails('{{ alert._id }}')" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="resolveAlert('{{ alert._id }}')" title="Resolve">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if alert.details %}
+                            <div class="mt-2 p-2 bg-light rounded">
+                                <small><strong>Details:</strong> {{ alert.details }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-shield-check" style="color: #28a745;"></i>
+                        <h4>No Active Fraud Alerts</h4>
+                        <p class="text-muted">All assessments are clean and secure</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Analytics Chart -->
+        <div class="card mt-4" data-aos="fade-up">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up text-primary"></i> Fraud Trends Over Time</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="fraudTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alert Details Modal -->
+    <div class="modal fade" id="alertModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-shield"></i> Fraud Alert Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="alertDetails">
+                    <!-- Details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Fraud Trends Chart
+        const fraudCtx = document.getElementById('fraudTrendsChart').getContext('2d');
+        const fraudTrendsData = {{ fraud_trends|tojson }};
+        
+        if (fraudTrendsData && fraudTrendsData.length > 0) {
+            new Chart(fraudCtx, {
+                type: 'line',
+                data: {
+                    labels: fraudTrendsData.map(item => item.date),
+                    datasets: [{
+                        label: 'Fraud Alerts',
+                        data: fraudTrendsData.map(item => item.count),
+                        borderColor: 'rgb(220, 53, 69)',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(220, 53, 69)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Alerts'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Alerts: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function viewDetails(alertId) {
+            fetch(`/admin/fraud_alert_details/${alertId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const modal = new bootstrap.Modal(document.getElementById('alertModal'));
+                    const detailsDiv = document.getElementById('alertDetails');
+                    const severityClass = data.severity === 'high' ? 'danger' : (data.severity === 'medium' ? 'warning' : 'info');
+                    
+                    detailsDiv.innerHTML = `
+                        <div class="text-center mb-3">
+                            <span class="severity-badge severity-${data.severity} mb-2">
+                                <i class="bi bi-${data.severity === 'high' ? 'exclamation-triangle' : (data.severity === 'medium' ? 'exclamation-circle' : 'info-circle')}"></i>
+                                ${data.severity.toUpperCase()} RISK
+                            </span>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-person"></i> Student:</strong>
+                            <p class="mt-1">${data.student_name}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-file-text"></i> Assessment:</strong>
+                            <p class="mt-1">${data.assessment_title}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-tag"></i> Alert Type:</strong>
+                            <p class="mt-1">${data.alert_type}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-info-circle"></i> Details:</strong>
+                            <div class="p-2 bg-light rounded mt-1">${data.details || 'No additional details'}</div>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-lightbulb"></i> Recommendation:</strong>
+                            <div class="p-2 bg-info bg-opacity-10 rounded mt-1">${data.recommendation}</div>
+                        </div>
+                    `;
+                    modal.show();
+                });
+        }
+        
+        function resolveAlert(alertId) {
+            if (confirm('Mark this alert as resolved?')) {
+                fetch(`/admin/resolve_fraud_alert/${alertId}`, {method: 'POST'})
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error resolving alert');
+                        }
+                    });
+            }
+        }
+        
+        function resolveAllAlerts() {
+            if (confirm('Resolve all active fraud alerts?')) {
+                fetch('/admin/resolve_all_alerts', {method: 'POST'})
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+        
+        function refreshAlerts() {
+            location.reload();
+        }
+        
+        function saveDetectionRules() {
+            const rules = {
+                detect_speed: document.getElementById('detect_speed').checked,
+                detect_tab_switch: document.getElementById('detect_tab_switch').checked,
+                detect_copy_paste: document.getElementById('detect_copy_paste').checked,
+                detect_ip_mismatch: document.getElementById('detect_ip_mismatch').checked,
+                detect_identical_answers: document.getElementById('detect_identical_answers').checked,
+                detect_time_pattern: document.getElementById('detect_time_pattern').checked,
+                detect_device_change: document.getElementById('detect_device_change').checked,
+                detect_location_change: document.getElementById('detect_location_change').checked
+            };
+            
+            fetch('/admin/save_detection_rules', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(rules)
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Detection rules saved successfully!');
+                  } else {
+                      alert('Error saving rules');
+                  }
+              });
+        }
+        
+        // Add hover effect to fraud cards
+        document.querySelectorAll('.fraud-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Add hover effect to stats cards
+        document.querySelectorAll('.stats-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

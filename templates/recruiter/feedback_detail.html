@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Details - Recruiter Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .feedback-detail-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .rating-large {
+            font-size: 3rem;
+            color: #ffc107;
+        }
+        
+        .info-row {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .response-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .btn-send {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+        }
+        
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-navbar="navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/recruiter/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="mb-3">
+            <a href="/recruiter/feedback" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Feedback
+            </a>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card feedback-detail-card">
+                    <div class="card-header bg-white border-0 pt-4">
+                        <h4 class="mb-0">
+                            <i class="bi bi-chat-dots text-primary"></i> Feedback Details
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Student Info -->
+                        <div class="info-row">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-person"></i> Student</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="mb-0">{{ feedback.student_name }}</h5>
+                                    <small class="text-muted">{{ feedback.student_email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feedback Type -->
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-tag"></i> Type</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <span class="badge {% if feedback.type == 'application' %}bg-primary{% else %}bg-info{% endif %}">
+                                        {% if feedback.type == 'application' %}
+                                            <i class="bi bi-briefcase"></i> Job Application
+                                        {% else %}
+                                            <i class="bi bi-chat"></i> Interview
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Job Position -->
+                        {% if feedback.job_title %}
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-briefcase"></i> Position</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    {{ feedback.job_title }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Rating -->
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-star"></i> Rating</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="rating-large">
+                                        {% for i in range(feedback.rating) %}
+                                            <i class="bi bi-star-fill"></i>
+                                        {% endfor %}
+                                        {% for i in range(5 - feedback.rating) %}
+                                            <i class="bi bi-star"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feedback -->
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-chat"></i> Feedback</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <p class="mb-0">{{ feedback.feedback }}</p>
+                                    <small class="text-muted">
+                                        Submitted on {{ feedback.date.strftime('%B %d, %Y at %I:%M %p') if feedback.date else 'N/A' }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Suggestions -->
+                        {% if feedback.suggestions %}
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-lightbulb"></i> Suggestions</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="alert alert-info mb-0">
+                                        {{ feedback.suggestions }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Your Response (if any) -->
+                        {% if feedback.recruiter_response %}
+                        <div class="info-row">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><i class="bi bi-reply-all"></i> Your Response</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="alert alert-success mb-0">
+                                        <p class="mb-0">{{ feedback.recruiter_response }}</p>
+                                        <small class="text-muted">
+                                            Responded on {{ feedback.response_date.strftime('%B %d, %Y at %I:%M %p') if feedback.response_date else 'N/A' }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Response Form -->
+                {% if not feedback.recruiter_response %}
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-reply"></i> Respond to Feedback</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/recruiter/feedback/respond" method="POST">
+                            <input type="hidden" name="feedback_id" value="{{ feedback._id }}">
+                            <div class="mb-3">
+                                <label class="form-label">Your Response</label>
+                                <textarea class="form-control" name="response" rows="4" required 
+                                          placeholder="Thank the student for their feedback and address any concerns..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-send text-white">
+                                <i class="bi bi-send"></i> Send Response
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

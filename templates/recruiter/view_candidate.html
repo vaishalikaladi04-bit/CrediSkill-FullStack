@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile - {{ candidate.name }} - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 600;
+            border: 4px solid white;
+        }
+        
+        /* Info Cards */
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .info-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* Skill Tags */
+        .skill-tag {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            color: #495057;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        /* Section Cards */
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section-header h5 {
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+        
+        .section-body {
+            padding: 20px;
+        }
+        
+        /* Timeline */
+        .timeline-item {
+            border-left: 3px solid #667eea;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 0;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Assessment Table */
+        .assessment-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .assessment-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .score-high {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .score-medium {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .score-low {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 30px;
+            }
+            
+            .action-buttons {
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .info-card, .section-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/candidates">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4 mb-5">
+        <div class="row">
+            <!-- Main Profile Column -->
+            <div class="col-lg-8">
+                <!-- Profile Header -->
+                <div class="profile-header" data-aos="fade-down">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            <div class="profile-avatar">
+                                {{ candidate.name[0]|upper }}
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="mb-2">{{ candidate.name }}</h2>
+                            <p class="mb-1"><i class="bi bi-envelope"></i> {{ candidate.email }}</p>
+                            {% if profile.location %}
+                            <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ profile.location }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <div class="badge bg-light text-dark p-3">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                Overall Score: {{ "%.1f"|format(profile.overall_score|default(0)) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bio Section -->
+                {% if profile.bio %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-person-badge"></i> Professional Summary</h5>
+                    </div>
+                    <div class="section-body">
+                        <p>{{ profile.bio }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Skills Section -->
+                {% if profile.skill_scores %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-star"></i> Verified Skills</h5>
+                    </div>
+                    <div class="section-body">
+                        <div class="row">
+                            {% for skill, score in profile.skill_scores.items() %}
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>{{ skill|title }}</strong>
+                                    <span class="text-primary">{{ "%.1f"|format(score) }}%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ score }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Technical Skills -->
+                {% if profile.skills %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-lightbulb"></i> Technical Skills</h5>
+                    </div>
+                    <div class="section-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in profile.skills %}
+                            <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Education -->
+                {% if profile.education %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-mortarboard"></i> Education</h5>
+                    </div>
+                    <div class="section-body">
+                        {% for edu in profile.education %}
+                        <div class="timeline-item">
+                            <h6 class="mb-1">{{ edu.degree }}</h6>
+                            <p class="text-muted mb-1">{{ edu.institution }}</p>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> {{ edu.year }}
+                                {% if edu.grade %} | Grade: {{ edu.grade }}{% endif %}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Projects -->
+                {% if profile.projects %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-code-square"></i> Projects</h5>
+                    </div>
+                    <div class="section-body">
+                        {% for project in profile.projects %}
+                        <div class="mb-4">
+                            <h6 class="mb-1">{{ project.title }}</h6>
+                            {% if project.technologies %}
+                            <small class="text-muted">Technologies: {{ project.technologies }}</small>
+                            {% endif %}
+                            <p class="mt-2">{{ project.description }}</p>
+                            {% if project.link %}
+                            <a href="{{ project.link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-link"></i> View Project
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% if not loop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Certifications -->
+                {% if profile.certifications %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-award"></i> Certifications</h5>
+                    </div>
+                    <div class="section-body">
+                        {% for cert in profile.certifications %}
+                        <div class="mb-3">
+                            <h6 class="mb-1">{{ cert.name }}</h6>
+                            <p class="text-muted mb-1">{{ cert.issuer }}</p>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> {{ cert.date }}
+                                {% if cert.link %}
+                                | <a href="{{ cert.link }}" target="_blank">View Certificate</a>
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Achievements -->
+                {% if profile.achievements %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-trophy"></i> Achievements</h5>
+                    </div>
+                    <div class="section-body">
+                        {% for achievement in profile.achievements %}
+                        <div class="mb-3">
+                            <h6 class="mb-1">{{ achievement.title }}</h6>
+                            <p>{{ achievement.description }}</p>
+                            <small class="text-muted"><i class="bi bi-calendar"></i> {{ achievement.date }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Assessment History -->
+                {% if results %}
+                <div class="section-card" data-aos="fade-up">
+                    <div class="section-header">
+                        <h5><i class="bi bi-bar-chart-line"></i> Assessment History</h5>
+                    </div>
+                    <div class="section-body">
+                        <div class="table-responsive">
+                            <table class="table assessment-table">
+                                <thead>
+                                    <tr>
+                                        <th>Assessment</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td><strong>{{ result.assessment_title }}</strong></td>
+                                        <td>
+                                            <span class="{% if result.score_percentage >= 70 %}score-high{% elif result.score_percentage >= 50 %}score-medium{% else %}score-low{% endif %}">
+                                                {{ "%.1f"|format(result.score_percentage) }}%
+                                            </span>
+                                        </td>
+                                        <td>{{ result.date_taken.strftime('%Y-%m-%d') if result.date_taken else 'N/A' }}</td>
+                                        <td>
+                                            {% if result.score_percentage >= 70 %}
+                                                <span class="badge bg-success">Excellent</span>
+                                            {% elif result.score_percentage >= 50 %}
+                                                <span class="badge bg-warning">Good</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Needs Improvement</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar - Quick Actions -->
+            <div class="col-lg-4">
+                <div class="action-buttons" data-aos="fade-left">
+                    <div class="info-card">
+                        <div class="info-title">Contact Information</div>
+                        <div class="info-value mb-2">
+                            <i class="bi bi-envelope"></i> {{ candidate.email }}
+                        </div>
+                        {% if profile.phone %}
+                        <div class="info-value mb-2">
+                            <i class="bi bi-telephone"></i> {{ profile.phone }}
+                        </div>
+                        {% endif %}
+                        {% if profile.linkedin %}
+                        <div class="info-value mb-2">
+                            <i class="bi bi-linkedin"></i> 
+                            <a href="{{ profile.linkedin }}" target="_blank">LinkedIn Profile</a>
+                        </div>
+                        {% endif %}
+                        {% if profile.github %}
+                        <div class="info-value">
+                            <i class="bi bi-github"></i> 
+                            <a href="{{ profile.github }}" target="_blank">GitHub Profile</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-title">Quick Actions</div>
+                        <a href="/recruiter/shortlist_candidate/{{ candidate._id }}" class="btn btn-warning btn-action w-100" onclick="return confirm('Shortlist this candidate?')">
+                            <i class="bi bi-star"></i> Shortlist Candidate
+                        </a>
+                        <a href="/recruiter/send_message/{{ candidate._id }}" class="btn btn-primary btn-action w-100">
+                            <i class="bi bi-envelope"></i> Send Message
+                        </a>
+           
+                        <button class="btn btn-secondary btn-action w-100" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Print Profile
+                        </button>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-title">Profile Summary</div>
+                        <div class="mb-2">
+                            <small class="text-muted">Overall Score</small>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: {{ profile.overall_score|default(0) }}%"></div>
+                            </div>
+                            <span class="text-primary">{{ "%.1f"|format(profile.overall_score|default(0)) }}%</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Skills Count</small>
+                            <div><strong>{{ profile.skills|length if profile.skills else 0 }}</strong> skills</div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Projects Completed</small>
+                            <div><strong>{{ profile.projects|length if profile.projects else 0 }}</strong> projects</div>
+                        </div>
+                        <div>
+                            <small class="text-muted">Certifications</small>
+                            <div><strong>{{ profile.certifications|length if profile.certifications else 0 }}</strong> certifications</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Animate progress bars
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+        
+        // Add hover effect to skill tags
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            tag.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Local development tools
+.vscode/
+.idea/
+.pytest_cache/
+.coverage
+
+# User uploads and generated files
+/uploads/
+/static/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+
+.env
+uploads/
+__pycache__/

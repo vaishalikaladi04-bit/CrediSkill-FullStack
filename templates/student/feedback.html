@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Feedback Cards */
+        .feedback-card {
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .feedback-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .feedback-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .feedback-body {
+            padding: 20px;
+        }
+        
+        /* Star Rating */
+        .star-rating {
+            display: inline-flex;
+            gap: 5px;
+        }
+        
+        .star {
+            font-size: 1.2rem;
+            color: #ffc107;
+        }
+        
+        .star-empty {
+            color: #e0e0e0;
+        }
+        
+        /* Form Cards */
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .form-header i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .form-body {
+            padding: 25px;
+        }
+        
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Rating Stars Input */
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .rating-input input {
+            display: none;
+        }
+        
+        .rating-input label {
+            font-size: 2rem;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-input label:hover,
+        .rating-input label:hover ~ label,
+        .rating-input input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        /* Submit Button */
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        /* Badge */
+        .feedback-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-application {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-interview {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .form-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-card, .feedback-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/student/dashboard">
+                <i class="bi bi-mortarboard-fill"></i> Smart Education
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/profile">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/assessment">
+                            <i class="bi bi-pencil-square"></i> Assessments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/results">
+                            <i class="bi bi-bar-chart-line"></i> Results
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/jobs">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/resume">
+                            <i class="bi bi-file-text"></i> Resume
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/student/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Share Your Feedback</h2>
+                    <p>Your feedback helps us improve and provide better services for everyone</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-chat-heart" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="bi bi-send"></i>
+                        <h4 class="mb-0">Application Feedback</h4>
+                        <p class="mb-0 small">Share your experience with the application process</p>
+                    </div>
+                    <div class="form-body">
+                        <form method="POST" action="/student/feedback/application" id="appFeedbackForm">
+                            <div class="mb-3">
+                                <label class="form-label">Select Job Application</label>
+                                <select class="form-select" name="job_id" required>
+                                    <option value="">Choose a job you applied for...</option>
+                                    {% for app in applications %}
+                                    <option value="{{ app._id }}">{{ app.job_title }} ({{ app.status|title }})</option>
+                                    {% endfor %}
+                                </select>
+                                {% if not applications %}
+                                <small class="text-muted">You haven't applied to any jobs yet.</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Your Rating</label>
+                                <div class="rating-input">
+                                    <input type="radio" name="rating" value="5" id="app5"><label for="app5">★</label>
+                                    <input type="radio" name="rating" value="4" id="app4"><label for="app4">★</label>
+                                    <input type="radio" name="rating" value="3" id="app3"><label for="app3">★</label>
+                                    <input type="radio" name="rating" value="2" id="app2"><label for="app2">★</label>
+                                    <input type="radio" name="rating" value="1" id="app1"><label for="app1">★</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Your Feedback</label>
+                                <textarea class="form-control" name="feedback" rows="4" placeholder="Share your experience with the application process..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-submit" {% if not applications %}disabled{% endif %}>
+                                <i class="bi bi-send"></i> Submit Application Feedback
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="bi bi-chat-dots"></i>
+                        <h4 class="mb-0">Interview Feedback</h4>
+                        <p class="mb-0 small">Share your interview experience</p>
+                    </div>
+                    <div class="form-body">
+                        <form method="POST" action="/student/feedback/interview" id="interviewFeedbackForm">
+                            <div class="mb-3">
+                                <label class="form-label">Interview Details</label>
+                                <input type="text" class="form-control" name="interview_title" placeholder="e.g., Google - Software Engineer Interview" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Your Rating</label>
+                                <div class="rating-input">
+                                    <input type="radio" name="rating" value="5" id="int5"><label for="int5">★</label>
+                                    <input type="radio" name="rating" value="4" id="int4"><label for="int4">★</label>
+                                    <input type="radio" name="rating" value="3" id="int3"><label for="int3">★</label>
+                                    <input type="radio" name="rating" value="2" id="int2"><label for="int2">★</label>
+                                    <input type="radio" name="rating" value="1" id="int1"><label for="int1">★</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Interview Experience</label>
+                                <textarea class="form-control" name="feedback" rows="3" placeholder="Share your interview experience..." required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Suggestions for Improvement</label>
+                                <textarea class="form-control" name="suggestions" rows="2" placeholder="How can we improve the interview process?"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-submit">
+                                <i class="bi bi-chat"></i> Submit Interview Feedback
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Previous Feedback Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3 class="mb-4" data-aos="fade-up">
+                    <i class="bi bi-clock-history"></i> Your Previous Feedback
+                </h3>
+                
+                {% if feedbacks %}
+                    <div class="row">
+                        {% for feedback in feedbacks %}
+                        <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+                            <div class="feedback-card">
+                                <div class="feedback-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="feedback-badge {% if feedback.type == 'application' %}badge-application{% else %}badge-interview{% endif %}">
+                                                <i class="bi bi-{% if feedback.type == 'application' %}send{% else %}chat-dots{% endif %}"></i>
+                                                {{ feedback.type|title }} Feedback
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> {{ feedback.date.strftime('%b %d, %Y') if feedback.date else 'N/A' }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="feedback-body">
+                                    {% if feedback.type == 'application' %}
+                                        <p><strong>Application:</strong> {{ feedback.application_title|default('N/A') }}</p>
+                                    {% else %}
+                                        <p><strong>Interview:</strong> {{ feedback.interview_title|default('N/A') }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="star-rating mb-2">
+                                        {% for i in range(feedback.rating) %}
+                                            <i class="bi bi-star-fill star"></i>
+                                        {% endfor %}
+                                        {% for i in range(5 - feedback.rating) %}
+                                            <i class="bi bi-star star-empty"></i>
+                                        {% endfor %}
+                                        <span class="ms-2 text-muted">({{ feedback.rating }}/5)</span>
+                                    </div>
+                                    
+                                    <p class="mb-2">{{ feedback.feedback }}</p>
+                                    
+                                    {% if feedback.suggestions %}
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <strong><i class="bi bi-lightbulb"></i> Suggestions:</strong>
+                                        <p class="mb-0 mt-1">{{ feedback.suggestions }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="mt-2 text-end">
+                                        <small class="text-muted">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Thank you for your feedback!
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state" data-aos="fade-up">
+                        <i class="bi bi-chat-square-text"></i>
+                        <h4>No Feedback Submitted Yet</h4>
+                        <p class="text-muted">Share your experience to help us improve our services</p>
+                        <button class="btn btn-primary mt-3" onclick="scrollToForms()">
+                            <i class="bi bi-pencil"></i> Submit Your First Feedback
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Scroll to forms function
+        function scrollToForms() {
+            document.querySelector('.row.mb-4').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Form submission with validation
+        const appForm = document.getElementById('appFeedbackForm');
+        const interviewForm = document.getElementById('interviewFeedbackForm');
+        
+        if (appForm) {
+            appForm.addEventListener('submit', function(e) {
+                const rating = document.querySelector('input[name="rating"]:checked');
+                if (!rating) {
+                    e.preventDefault();
+                    alert('Please select a rating');
+                    return;
+                }
+                
+                const feedback = this.querySelector('textarea[name="feedback"]').value;
+                if (!feedback.trim()) {
+                    e.preventDefault();
+                    alert('Please provide your feedback');
+                    return;
+                }
+                
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+                submitBtn.disabled = true;
+            });
+        }
+        
+        if (interviewForm) {
+            interviewForm.addEventListener('submit', function(e) {
+                const rating = document.querySelector('input[name="rating"]:checked');
+                if (!rating) {
+                    e.preventDefault();
+                    alert('Please select a rating');
+                    return;
+                }
+                
+                const title = this.querySelector('input[name="interview_title"]').value;
+                if (!title.trim()) {
+                    e.preventDefault();
+                    alert('Please enter interview details');
+                    return;
+                }
+                
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // Auto-set default rating for application form (optional)
+        const appRatingInputs = document.querySelectorAll('#appFeedbackForm .rating-input input');
+        if (appRatingInputs.length > 0) {
+            appRatingInputs[2].checked = true; // Default 3 stars
+        }
+        
+        // Auto-set default rating for interview form
+        const intRatingInputs = document.querySelectorAll('#interviewFeedbackForm .rating-input input');
+        if (intRatingInputs.length > 0) {
+            intRatingInputs[2].checked = true; // Default 3 stars
+        }
+        
+        // Add hover effect to feedback cards
+        document.querySelectorAll('.feedback-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Add character counter for feedback textareas
+        document.querySelectorAll('textarea[name="feedback"]').forEach(textarea => {
+            const counter = document.createElement('small');
+            counter.className = 'text-muted float-end';
+            counter.innerText = '0/500';
+            textarea.parentNode.appendChild(counter);
+            
+            textarea.addEventListener('input', function() {
+                const count = this.value.length;
+                counter.innerText = `${count}/500`;
+                if (count > 500) {
+                    counter.style.color = 'red';
+                    this.value = this.value.substring(0, 500);
+                } else {
+                    counter.style.color = '#6c757d';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

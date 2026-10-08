@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Engine - Smart Education Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">Smart Education - Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/question_bank">Question Bank</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/assessments">Assessments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/recommendation_engine">Recommendation Engine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Recommendation Engine Configuration</h2>
+                <p class="text-muted">Configure how jobs and assessments are recommended to students</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Recommendation Factors</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/admin/update_recommendation_factors">
+                            <div class="mb-3">
+                                <label class="form-label">Skill Score Weight (%)</label>
+                                <input type="range" class="form-range" name="skill_weight" min="0" max="100" value="{{ factors.skill_weight|default(50) }}" onchange="updateFactors()">
+                                <span id="skill_weight_val">{{ factors.skill_weight|default(50) }}</span>%
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Completion Weight (%)</label>
+                                <input type="range" class="form-range" name="profile_weight" min="0" max="100" value="{{ factors.profile_weight|default(20) }}" onchange="updateFactors()">
+                                <span id="profile_weight_val">{{ factors.profile_weight|default(20) }}</span>%
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Assessment History Weight (%)</label>
+                                <input type="range" class="form-range" name="history_weight" min="0" max="100" value="{{ factors.history_weight|default(20) }}" onchange="updateFactors()">
+                                <span id="history_weight_val">{{ factors.history_weight|default(20) }}</span>%
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Feedback Score Weight (%)</label>
+                                <input type="range" class="form-range" name="feedback_weight" min="0" max="100" value="{{ factors.feedback_weight|default(10) }}" onchange="updateFactors()">
+                                <span id="feedback_weight_val">{{ factors.feedback_weight|default(10) }}</span>%
+                            </div>
+                            <div class="alert alert-info">
+                                <strong>Total Weight:</strong> <span id="total_weight">100</span>%
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Factors</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Feedback Integration</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/admin/update_feedback_integration">
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="use_application_feedback" {% if config.use_application_feedback %}checked{% endif %}>
+                                    <label class="form-check-label">Use Application Feedback for Recommendations</label>
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="use_interview_feedback" {% if config.use_interview_feedback %}checked{% endif %}>
+                                    <label class="form-check-label">Use Interview Feedback for Recommendations</label>
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Feedback Impact Factor</label>
+                                <input type="range" class="form-range" name="feedback_impact" min="0" max="2" step="0.1" value="{{ config.feedback_impact|default(1.0) }}" onchange="updateFeedbackImpact(this.value)">
+                                <span id="feedback_impact_val">{{ config.feedback_impact|default(1.0) }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Minimum Feedback Samples</label>
+                                <input type="number" class="form-control" name="min_feedback_samples" value="{{ config.min_feedback_samples|default(5) }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Feedback Integration</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Retrain Recommendation Model</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Retrain the recommendation model using the latest feedback data
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Training Data Range</label>
+                            <select class="form-control" id="training_range">
+                                <option value="all">All Time</option>
+                                <option value="6months">Last 6 Months</option>
+                                <option value="3months">Last 3 Months</option>
+                                <option value="1month">Last Month</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="progress" id="training-progress" style="display: none;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">0%</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="retrainModel()">
+                            <i class="bi bi-arrow-repeat"></i> Retrain Model
+                        </button>
+                        <button class="btn btn-info" onclick="viewModelPerformance()">
+                            <i class="bi bi-graph-up"></i> View Performance
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recommendation Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-success">
+                                    <h6>Click-Through Rate</h6>
+                                    <h3>{{ analytics.ctr|default(0) }}%</h3>
+                                    <small>Jobs clicked vs shown</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6>Application Rate</h6>
+                                    <h3>{{ analytics.application_rate|default(0) }}%</h3>
+                                    <small>Applied vs recommended</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning">
+                                    <h6>Hiring Success Rate</h6>
+                                    <h3>{{ analytics.hiring_success|default(0) }}%</h3>
+                                    <small>Hired vs shortlisted</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-secondary">
+                                    <h6>Model Accuracy</h6>
+                                    <h3>{{ analytics.model_accuracy|default(0) }}%</h3>
+                                    <small>Based on feedback</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="/admin/recommendation_details" class="btn btn-sm btn-outline-primary">View Detailed Analytics</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Feedback</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Feedback Type</th>
+                                        <th>Rating</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for feedback in recent_feedback %}
+                                    <tr>
+                                        <td>{{ feedback.student_name }}</td>
+                                        <td>{{ feedback.type|title }}</td>
+                                        <td>
+                                            {% for i in range(feedback.rating) %}★{% endfor %}
+                                            {% for i in range(5 - feedback.rating) %}☆{% endfor %}
+                                        </td>
+                                        <td>{{ feedback.date.strftime('%Y-%m-%d') if feedback.date else 'N/A' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateFactors() {
+            const skill = parseInt(document.getElementById('skill_weight_val')?.innerText || 50);
+            const profile = parseInt(document.getElementById('profile_weight_val')?.innerText || 20);
+            const history = parseInt(document.getElementById('history_weight_val')?.innerText || 20);
+            const feedback = parseInt(document.getElementById('feedback_weight_val')?.innerText || 10);
+            const total = skill + profile + history + feedback;
+            document.getElementById('total_weight').innerText = total;
+            
+            if (total !== 100) {
+                document.getElementById('total_weight').style.color = 'red';
+            } else {
+                document.getElementById('total_weight').style.color = 'green';
+            }
+        }
+        
+        function updateFeedbackImpact(val) {
+            document.getElementById('feedback_impact_val').innerText = val;
+        }
+        
+        function retrainModel() {
+            const range = document.getElementById('training_range').value;
+            const progress = document.getElementById('training-progress');
+            const progressBar = progress.querySelector('.progress-bar');
+            
+            progress.style.display = 'block';
+            let percent = 0;
+            const interval = setInterval(() => {
+                percent += 10;
+                progressBar.style.width = percent + '%';
+                progressBar.innerText = percent + '%';
+                
+                if (percent >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        alert('Model retrained successfully!');
+                        progress.style.display = 'none';
+                        progressBar.style.width = '0%';
+                        location.reload();
+                    }, 500);
+                }
+            }, 500);
+            
+            // Send training request
+            fetch('/admin/retrain_recommendation_model', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({range: range})
+            });
+        }
+        
+        function viewModelPerformance() {
+            window.location.href = '/admin/model_performance';
+        }
+        
+        // Initialize factors
+        updateFactors();
+        
+        // Add event listeners for range inputs
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            const spanId = input.getAttribute('name') + '_val';
+            const span = document.getElementById(spanId);
+            if (span) {
+                input.addEventListener('input', function() {
+                    span.innerText = this.value;
+                    updateFactors();
+                });
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

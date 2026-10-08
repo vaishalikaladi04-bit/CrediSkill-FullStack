@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #eef2f5;
+            padding: 40px 0;
+        }
+
+        .resume-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* PDF Optimized Styles */
+        .resume-sidebar {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 25px;
+            height: 100%;
+        }
+
+        .resume-main {
+            background: white;
+            padding: 30px 30px;
+        }
+
+        .profile-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 3px solid #3498db;
+        }
+
+        .resume-sidebar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .resume-sidebar .title {
+            text-align: center;
+            color: #3498db;
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+
+        .contact-info p {
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-info i {
+            width: 18px;
+            color: #3498db;
+            font-size: 0.8rem;
+        }
+
+        .skill-item {
+            margin-bottom: 12px;
+        }
+
+        .skill-name {
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .skill-bar {
+            background: rgba(255,255,255,0.2);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            background: #3498db;
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .level-advanced { background: #27ae60; color: white; }
+        .level-intermediate { background: #f39c12; color: white; }
+        .level-beginner { background: #3498db; color: white; }
+        .level-novice { background: #95a5a6; color: white; }
+
+        .main-section {
+            margin-bottom: 20px;
+        }
+
+        .main-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            border-left: 3px solid #3498db;
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+
+        .main-section h2 i {
+            color: #3498db;
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+
+        .summary-text {
+            color: #555;
+            line-height: 1.5;
+            font-size: 0.8rem;
+        }
+
+        .project-card, .education-card, .cert-card {
+            margin-bottom: 15px;
+        }
+
+        .project-title, .edu-title, .cert-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+        }
+
+        .project-meta, .edu-meta, .cert-meta {
+            font-size: 0.7rem;
+            color: #3498db;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .project-desc, .edu-desc {
+            font-size: 0.75rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .assessment-card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            border-left: 2px solid #3498db;
+        }
+
+        .assessment-name {
+            font-weight: 600;
+            font-size: 0.7rem;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .assessment-score {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .score-high { color: #27ae60; }
+        .score-medium { color: #f39c12; }
+        .score-low { color: #e74c3c; }
+
+        .assessment-type {
+            font-size: 0.6rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .skill-tag {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .skill-tag i {
+            color: #3498db;
+            margin-right: 4px;
+            font-size: 0.65rem;
+        }
+
+        /* PDF Specific Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .no-print, .navbar, .action-buttons, button, .btn, .btn-action {
+                display: none !important;
+            }
+            .resume-wrapper {
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .resume-sidebar {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                break-inside: avoid;
+            }
+            .resume-main {
+                break-inside: avoid;
+            }
+            .skill-progress {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .container {
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .row {
+                display: block;
+            }
+            .col-md-4, .col-md-8 {
+                width: 100%;
+                float: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .resume-sidebar, .resume-main {
+                padding: 20px;
+            }
+            .assessment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-action {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .navbar {
+            background: #2c3e50 !important;
+            margin-bottom: 30px;
+        }
+        
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        
+        .nav-link:hover {
+            color: #3498db !important;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generating PDF... Please wait...</div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top no-print">
+        <div class="container">
+            <a class="navbar-brand" href="/student/dashboard">
+                <i class="bi bi-mortarboard-fill"></i> Smart Education
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/student/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/profile"><i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/assessment"><i class="bi bi-pencil-square"></i> Assessments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/results"><i class="bi bi-bar-chart-line"></i> Results</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/student/jobs"><i class="bi bi-briefcase"></i> Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/student/resume"><i class="bi bi-file-text"></i> Resume</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="resumeContent" class="resume-wrapper">
+            <div class="row g-0">
+                <!-- Sidebar - Left Column -->
+                <div class="col-md-4">
+                    <div class="resume-sidebar">
+                        <div class="profile-image">
+                            <div class="profile-avatar">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        </div>
+                        <h1>{{ user.name if user else 'Student' }}</h1>
+                        <div class="title">{{ profile.onboarding_data.role_specific if profile and profile.onboarding_data else 'Professional' }}</div>
+
+                        <!-- Contact Information -->
+                        <div class="sidebar-section contact-info">
+                            <h3><i class="bi bi-envelope"></i> Contact</h3>
+                            <p><i class="bi bi-envelope"></i> {{ user.email if user else 'N/A' }}</p>
+                            {% if profile and profile.phone %}
+                            <p><i class="bi bi-telephone"></i> {{ profile.phone }}</p>
+                            {% endif %}
+                            {% if profile and profile.location %}
+                            <p><i class="bi bi-geo-alt"></i> {{ profile.location }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Verified Skills with Levels -->
+                        {% if profile and profile.skill_scores %}
+                        <div class="sidebar-section">
+                            <h3><i class="bi bi-star-fill"></i> Verified Skills</h3>
+                            {% set skill_items = profile.skill_scores.items()|list %}
+                            {% for skill, score in skill_items[:4] %}
+                            <div class="skill-item">
+                                <div class="skill-name">
+                                    {{ skill|replace('_', ' ')|title }}
+                                    {% if score >= 80 %}
+                                    <span class="level-badge level-advanced">Advanced</span>
+                                    {% elif score >= 60 %}
+                                    <span class="level-badge level-intermediate">Intermediate</span>
+                                    {% elif score >= 40 %}
+                                    <span class="level-badge level-beginner">Beginner</span>
+                                    {% else %}
+                                    <span class="level-badge level-novice">Novice</span>
+                                    {% endif %}
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: {{ score }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Overall Level -->
+                        <div class="sidebar-section">
+                            <h3><i class="bi bi-trophy"></i> Overall Level</h3>
+                            <div class="text-center">
+                                <div style="font-size: 1.5rem; font-weight: 700;">{{ "%.0f"|format(profile.overall_score|default(0)) }}%</div>
+                                <div class="level-badge level-{{ profile.skill_level|default('Beginner') }}" style="font-size: 0.8rem; margin-top: 8px;">
+                                    <i class="bi bi-award"></i> {{ profile.skill_level|default('Beginner') }} Level
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Skills List -->
+                        {% if profile and profile.skills %}
+                        <div class="sidebar-section">
+                            <h3><i class="bi bi-code-slash"></i> Tech Stack</h3>
+                            <div class="skills-tags">
+                                {% for skill in profile.skills[:6] %}
+                                <span class="skill-tag"><i class="bi bi-check-circle-fill"></i> {{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Main Content - Right Column -->
+                <div class="col-md-8">
+                    <div class="resume-main">
+                        <!-- Professional Summary -->
+                        <div class="main-section">
+                            <h2><i class="bi bi-person-badge"></i> Professional Summary</h2>
+                            <div class="summary-text">
+                                {% if profile and profile.bio %}
+                                {{ profile.bio[:200] }}
+                                {% else %}
+                                Passionate professional with verified skills in {{ profile.skills[:3]|join(', ') if profile and profile.skills else 'technology' }}. 
+                                {{ profile.skill_level|default('Beginner') }} level professional with {{ profile.overall_score|default(0) }}% overall competency score.
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Assessment Scores Section -->
+                        {% if results %}
+                        <div class="main-section">
+                            <h2><i class="bi bi-bar-chart-steps"></i> Assessment Results</h2>
+                            <div class="assessment-grid">
+                                {% for result in results[:3] %}
+                                <div class="assessment-card">
+                                    <div class="assessment-name">{{ result.assessment_title[:25] if result.assessment_title else 'Assessment' }}</div>
+                                    <div class="assessment-score {% if result.score_percentage >= 70 %}score-high{% elif result.score_percentage >= 50 %}score-medium{% else %}score-low{% endif %}">
+                                        {{ "%.0f"|format(result.score_percentage) }}%
+                                    </div>
+                                    <div class="assessment-type">
+                                        {% if result.assessment_type %}
+                                            {% if 'skill' in result.assessment_type %}Skill
+                                            {% elif 'project' in result.assessment_type %}Project
+                                            {% elif 'certificate' in result.assessment_type %}Cert
+                                            {% else %}General
+                                            {% endif %}
+                                        {% else %}
+                                            General
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Featured Project (Step 3) -->
+                        {% if profile and profile.onboarding_data and profile.onboarding_data.project_title %}
+                        <div class="main-section">
+                            <h2><i class="bi bi-code-square"></i> Featured Project</h2>
+                            <div class="project-card">
+                                <div class="project-title">{{ profile.onboarding_data.project_title[:50] }}</div>
+                                <div class="project-meta">
+                                    <i class="bi bi-tools"></i> {{ profile.onboarding_data.project_technologies or 'N/A' }}
+                                </div>
+                                <div class="project-desc">{{ profile.onboarding_data.project_description[:100] if profile.onboarding_data.project_description else 'No description provided.' }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Education Section -->
+                        {% if profile and profile.education %}
+                        <div class="main-section">
+                            <h2><i class="bi bi-mortarboard"></i> Education</h2>
+                            {% for edu in profile.education[:2] %}
+                            <div class="education-card">
+                                <div class="edu-title">{{ edu.degree or 'Degree' }}</div>
+                                <div class="edu-meta">{{ edu.institution or 'Institution' }} | {{ edu.year or 'Year' }}</div>
+                                {% if edu.grade %}
+                                <div class="edu-desc">Grade: {{ edu.grade }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Key Certification (Step 4) -->
+                        {% if profile and profile.onboarding_data and profile.onboarding_data.certificate_name %}
+                        <div class="main-section">
+                            <h2><i class="bi bi-award"></i> Key Certification</h2>
+                            <div class="cert-card">
+                                <div class="cert-title">{{ profile.onboarding_data.certificate_name[:50] }}</div>
+                                <div class="cert-meta">{{ profile.onboarding_data.certificate_issuer or 'N/A' }} | {{ profile.onboarding_data.certificate_date or 'N/A' }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Competency Summary -->
+                        <div class="main-section">
+                            <h2><i class="bi bi-graph-up"></i> Competency Summary</h2>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded text-center">
+                                        <small class="text-muted">Overall Score</small>
+                                        <div class="h4 mb-0 text-primary">{{ "%.0f"|format(profile.overall_score|default(0)) }}%</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded text-center">
+                                        <small class="text-muted">Skill Level</small>
+                                        <div class="level-badge level-{{ profile.skill_level|default('Beginner') }}" style="font-size: 0.75rem;">
+                                            {{ profile.skill_level|default('Beginner') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons no-print">
+            <button onclick="downloadPDF()" class="btn btn-primary btn-action">
+                <i class="bi bi-download"></i> Download PDF
+            </button>
+            <button onclick="window.print()" class="btn btn-success btn-action">
+                <i class="bi bi-printer"></i> Print Resume
+            </button>
+            <button onclick="window.location.href='/student/dashboard'" class="btn btn-secondary btn-action">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animate skill bars on load
+        document.querySelectorAll('.skill-progress').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 200);
+        });
+
+        // Download PDF function - Exact copy of the resume
+        function downloadPDF() {
+            const element = document.getElementById('resumeContent');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            // Get current date for filename
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            const studentName = '{{ user.name if user else "student" }}'.replace(/\s/g, '_');
+            
+            // Optimized settings for exact PDF copy
+            const opt = {
+                margin: [0.2, 0.2, 0.2, 0.2],
+                filename: `${studentName}_resume_${dateStr}.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { 
+                    scale: 2,
+                    letterRendering: true,
+                    useCORS: true,
+                    logging: false,
+                    dpi: 300,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true,
+                    precision: 16
+                },
+                pagebreak: { mode: 'css', before: '.page-break', after: '.page-break-after' }
+            };
+            
+            // Generate PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }).catch((error) => {
+                console.error('PDF generation error:', error);
+                loadingOverlay.style.display = 'none';
+                // Fallback to print if PDF generation fails
+                if (confirm('PDF generation failed. Would you like to print instead?')) {
+                    window.print();
+                }
+            });
+        }
+
+        // Add hover effects
+        document.querySelectorAll('.project-card, .education-card, .cert-card, .assessment-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+                this.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>

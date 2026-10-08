@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Message - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Message Card */
+        .message-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .message-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border: none;
+        }
+        
+        .card-header h3 {
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 30px;
+        }
+        
+        /* Recipient Info */
+        .recipient-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .recipient-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        /* Buttons */
+        .btn-send {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            background: #5a6268;
+        }
+        
+        /* Character Counter */
+        .char-counter {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 30px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .btn-send, .btn-cancel {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/candidates">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/messages">
+                            <i class="bi bi-envelope"></i> Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4 mb-5">
+        <!-- Header Section -->
+        <div class="header-section" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>Send Message</h2>
+                    <p>Connect with candidates directly through our messaging system</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-chat-dots" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="message-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <h3><i class="bi bi-envelope-paper"></i> Compose Message</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Recipient Information -->
+                        <div class="recipient-card">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="recipient-avatar">
+                                    {{ candidate.name[0]|upper if candidate else '?' }}
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">To: {{ candidate.name if candidate else 'Candidate' }}</h5>
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-envelope"></i> {{ candidate.email if candidate else 'email@example.com' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="POST" action="/recruiter/send_message/{{ candidate._id if candidate else '' }}" id="messageForm">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-tag"></i> Subject *
+                                </label>
+                                <input type="text" class="form-control" name="subject" required 
+                                       placeholder="e.g., Interview Invitation - Software Engineer Position"
+                                       id="subjectInput">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-chat-text"></i> Message *
+                                </label>
+                                <textarea class="form-control" name="message" rows="8" required 
+                                          placeholder="Write your message here..."
+                                          id="messageInput"></textarea>
+                                <div class="char-counter text-muted text-end">
+                                    <span id="charCount">0</span> characters
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-paperclip"></i> Attachment (Optional)
+                                </label>
+                                <input type="file" class="form-control" name="attachment" accept=".pdf,.doc,.docx,.jpg,.png">
+                                <small class="text-muted">Max file size: 5MB. Allowed: PDF, DOC, DOCX, JPG, PNG</small>
+                            </div>
+                            
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="submit" class="btn btn-send" id="sendBtn">
+                                    <i class="bi bi-send"></i> Send Message
+                                </button>
+                                <a href="/recruiter/candidates" class="btn btn-cancel">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                        
+                        <!-- Template Suggestions -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h6><i class="bi bi-lightbulb"></i> Message Templates</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="useTemplate('interview')">
+                                        Interview Invitation
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="useTemplate('offer')">
+                                        Job Offer
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="useTemplate('feedback')">
+                                        Feedback Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Character counter
+        const messageInput = document.getElementById('messageInput');
+        const charCount = document.getElementById('charCount');
+        
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                charCount.innerText = this.value.length;
+                if (this.value.length > 1000) {
+                    charCount.style.color = 'red';
+                } else {
+                    charCount.style.color = '#6c757d';
+                }
+            });
+        }
+        
+        // Message templates
+        const templates = {
+            interview: {
+                subject: "Interview Invitation - {{ position }}",
+                message: `Dear {{ candidate_name }},
+
+I hope this email finds you well.
+
+We were impressed with your profile and would like to invite you for an interview for the {{ position }} position.
+
+Interview Details:
+- Date: [Insert Date]
+- Time: [Insert Time]
+- Duration: 60 minutes
+- Mode: [Video Call / In-person]
+- Meeting Link: [Insert Link]
+
+Please confirm your availability at your earliest convenience.
+
+Looking forward to speaking with you!
+
+Best regards,
+{{ recruiter_name }}
+{{ company_name }}`
+            },
+            offer: {
+                subject: "Job Offer - {{ position }}",
+                message: `Dear {{ candidate_name }},
+
+Congratulations! We are pleased to offer you the position of {{ position }} at {{ company_name }}.
+
+We were very impressed with your skills and experience, and we believe you would be a great addition to our team.
+
+Key Details:
+- Position: {{ position }}
+- Start Date: [Insert Date]
+- Location: [Insert Location]
+- Compensation: [Insert Details]
+
+Please review the attached offer letter for complete details. We would appreciate your response by [Insert Date].
+
+We look forward to welcoming you to our team!
+
+Best regards,
+{{ recruiter_name }}
+{{ company_name }}`
+            },
+            feedback: {
+                subject: "Feedback Request - {{ position }} Interview",
+                message: `Dear {{ candidate_name }},
+
+Thank you for taking the time to interview for the {{ position }} position at {{ company_name }}.
+
+We value your feedback about the interview process. Could you please share your thoughts on the following:
+1. What did you think about the interview process?
+2. Do you have any suggestions for improvement?
+3. Any other feedback you'd like to share?
+
+Your input will help us improve our recruitment process.
+
+Thank you for your time and interest in {{ company_name }}.
+
+Best regards,
+{{ recruiter_name }}
+{{ company_name }}`
+            }
+        };
+        
+        function useTemplate(type) {
+            const template = templates[type];
+            if (template) {
+                // Get candidate name from the page
+                const candidateName = document.querySelector('.recipient-card h5')?.innerText.replace('To: ', '') || 'Candidate';
+                const recruiterName = "{{ session.user_name }}";
+                const companyName = document.querySelector('.navbar-brand')?.innerText || 'Our Company';
+                
+                let subject = template.subject.replace('{{ position }}', 'Software Engineer');
+                let message = template.message
+                    .replace(/{{ candidate_name }}/g, candidateName)
+                    .replace(/{{ recruiter_name }}/g, recruiterName)
+                    .replace(/{{ company_name }}/g, companyName)
+                    .replace(/{{ position }}/g, 'Software Engineer');
+                
+                document.getElementById('subjectInput').value = subject;
+                document.getElementById('messageInput').value = message;
+                charCount.innerText = message.length;
+            }
+        }
+        
+        // Form submission with loading state
+        const form = document.getElementById('messageForm');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const subject = document.getElementById('subjectInput').value.trim();
+                const message = document.getElementById('messageInput').value.trim();
+                
+                if (!subject) {
+                    e.preventDefault();
+                    alert('Please enter a subject');
+                    return;
+                }
+                
+                if (!message) {
+                    e.preventDefault();
+                    alert('Please enter a message');
+                    return;
+                }
+                
+                sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+                sendBtn.disabled = true;
+            });
+        }
+        
+        // Auto-resize textarea
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+    </script>
+</body>
+</html>

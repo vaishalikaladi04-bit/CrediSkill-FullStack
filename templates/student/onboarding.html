@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .onboarding-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .progress-tracker {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+        
+        .step.completed .step-number::after {
+            content: '✓';
+        }
+        
+        .step-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .step.active .step-label {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-card h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-upload-label {
+            display: block;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-label:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .skill-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 3px;
+            cursor: pointer;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+        }
+        
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 20px;
+            }
+            
+            .step-label {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container onboarding-container">
+        <!-- Progress Tracker -->
+        <div class="progress-tracker" data-aos="fade-down">
+            <div class="row">
+                <div class="col-md-3 col-6 step" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Basic Info</div>
+                </div>
+                <div class="col-md-3 col-6 step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Skills & Resume</div>
+                </div>
+                <div class="col-md-3 col-6 step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Project</div>
+                </div>
+                <div class="col-md-3 col-6 step" id="step4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Certification</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Container -->
+        <div class="form-card" data-aos="fade-up">
+            <form method="POST" action="/student/onboarding" enctype="multipart/form-data" id="onboardingForm">
+                <!-- Step 1: Basic Information -->
+                <div id="step1Content" class="step-content">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle" style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        <h2 class="mt-3">Tell Us About Yourself</h2>
+                        <p class="text-muted">Help us understand your career goals</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">What role are you targeting?</label>
+                        <select class="form-select" name="role_specific" required>
+                            <option value="">Select your target role</option>
+                            <option value="Full Stack Developer">Full Stack Developer</option>
+                            <option value="Frontend Developer">Frontend Developer</option>
+                            <option value="Backend Developer">Backend Developer</option>
+                            <option value="Data Scientist">Data Scientist</option>
+                            <option value="DevOps Engineer">DevOps Engineer</option>
+                            <option value="Mobile Developer">Mobile Developer</option>
+                            <option value="AI/ML Engineer">AI/ML Engineer</option>
+                            <option value="Cloud Architect">Cloud Architect</option>
+                            <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Years of Experience</label>
+                        <select class="form-select" name="experience" required>
+                            <option value="0">Fresher (0 years)</option>
+                            <option value="1">1-2 years</option>
+                            <option value="3">3-5 years</option>
+                            <option value="6">6-8 years</option>
+                            <option value="9">9+ years</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Skills & Resume -->
+                <div id="step2Content" class="step-content" style="display: none;">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-code" style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        <h2 class="mt-3">Your Skills & Resume</h2>
+                        <p class="text-muted">List your technical skills and upload your resume</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Technical Skills (comma-separated)</label>
+                        <input type="text" class="form-control" name="skills" placeholder="e.g., Python, JavaScript, React, Node.js, MongoDB" required>
+                        <small class="text-muted">Enter your main technical skills separated by commas</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Upload Resume/CV</label>
+                        <div class="file-upload">
+                            <input type="file" name="resume_file" accept=".pdf,.doc,.docx" id="resumeFile">
+                            <label for="resumeFile" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i> Click to upload or drag and drop
+                            </label>
+                        </div>
+                        <small class="text-muted">Supported formats: PDF, DOC, DOCX (Max 5MB)</small>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Project Details -->
+                <div id="step3Content" class="step-content" style="display: none;">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-project-diagram" style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        <h2 class="mt-3">Your Best Project</h2>
+                        <p class="text-muted">Share details about your most impressive project</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Project Title</label>
+                        <input type="text" class="form-control" name="project_title" placeholder="e.g., E-Commerce Platform, AI Chatbot, Mobile App" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Technologies Used</label>
+                        <input type="text" class="form-control" name="project_technologies" placeholder="e.g., React, Node.js, MongoDB, Express" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Project Description</label>
+                        <textarea class="form-control" name="project_description" rows="4" placeholder="Describe your project, your role, key features, and what you learned..." required></textarea>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Certification -->
+                <div id="step4Content" class="step-content" style="display: none;">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-certificate" style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        <h2 class="mt-3">Your Certification</h2>
+                        <p class="text-muted">Add your most relevant certification</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Certification Name</label>
+                        <input type="text" class="form-control" name="certificate_name" placeholder="e.g., AWS Certified Developer, Google Data Analytics" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Issuing Organization</label>
+                        <input type="text" class="form-control" name="certificate_issuer" placeholder="e.g., AWS, Google, Microsoft, Coursera" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Date Obtained</label>
+                        <input type="month" class="form-control" name="certificate_date" required>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-next ms-auto" id="nextBtn" onclick="changeStep(1)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn btn-next" id="submitBtn" style="display: none;">
+                        Complete <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+        
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        function updateSteps() {
+            // Update step content visibility
+            for (let i = 1; i <= totalSteps; i++) {
+                const content = document.getElementById(`step${i}Content`);
+                if (content) {
+                    content.style.display = i === currentStep ? 'block' : 'none';
+                }
+                
+                const stepElement = document.getElementById(`step${i}`);
+                if (stepElement) {
+                    stepElement.classList.remove('active', 'completed');
+                    if (i < currentStep) {
+                        stepElement.classList.add('completed');
+                    } else if (i === currentStep) {
+                        stepElement.classList.add('active');
+                    }
+                }
+            }
+            
+            // Update buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'inline-block';
+            }
+            
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+        
+        function validateStep(step) {
+            const stepContent = document.getElementById(`step${step}Content`);
+            const inputs = stepContent.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            for (let input of inputs) {
+                if (!input.value.trim()) {
+                    input.style.borderColor = '#dc3545';
+                    input.focus();
+                    alert(`Please fill out the ${input.previousElementSibling?.innerText || 'required field'}`);
+                    return false;
+                }
+                input.style.borderColor = '#e0e0e0';
+            }
+            
+            return true;
+        }
+        
+        function changeStep(direction) {
+            if (direction === 1) {
+                if (!validateStep(currentStep)) {
+                    return;
+                }
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateSteps();
+                }
+            } else if (direction === -1) {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateSteps();
+                }
+            }
+        }
+        
+        // File upload handling
+        const fileInput = document.getElementById('resumeFile');
+        fileInput.addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            if (fileName) {
+                const label = document.querySelector('.file-upload-label');
+                label.innerHTML = `<i class="fas fa-file-pdf"></i> ${fileName}`;
+            }
+        });
+        
+        updateSteps();
+        
+        // Form submission loading state
+        const form = document.getElementById('onboardingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

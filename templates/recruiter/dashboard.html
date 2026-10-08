@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Dashboard - Smart Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #667eea !important;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+        
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Stat Cards */
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+        }
+        
+        /* Quick Actions */
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        /* Job Cards */
+        .job-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .status-closed {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        /* Candidate Cards */
+        .candidate-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .match-score {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 20px;
+            }
+            
+            .stat-card {
+                margin-bottom: 15px;
+            }
+            
+            .action-card {
+                margin-bottom: 15px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card, .action-card, .job-card, .candidate-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/recruiter/dashboard">
+                <i class="bi bi-building"></i> Smart Recruiter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/recruiter/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/company_profile">
+                            <i class="bi bi-building"></i> Company
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/post_job">
+                            <i class="bi bi-plus-circle"></i> Post Job
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/jobs">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/candidates">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/interviews">
+                            <i class="bi bi-calendar"></i> Interviews
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/messages">
+                            <i class="bi bi-envelope"></i> Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/analytics">
+                            <i class="bi bi-graph-up"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/recruiter/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Welcome Card -->
+        <div class="welcome-card" data-aos="fade-down">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-2">Welcome back, <strong>{{ session.user_name }}</strong>! 👋</h2>
+                    <p class="mb-0">
+                        {% if profile.company_name %}
+                            Managing <strong>{{ profile.company_name }}</strong> • 
+                            <i class="bi bi-star-fill"></i> Top recruiter status
+                        {% else %}
+                            <a href="/recruiter/company_profile" class="text-white text-decoration-none">
+                                <i class="bi bi-building"></i> Complete your company profile to attract better candidates
+                            </a>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <i class="bi bi-trophy" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="0">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Active Jobs</h6>
+                                <h2 class="mb-0">{{ stats.active_jobs|default(0) }}</h2>
+                            </div>
+                            <i class="bi bi-briefcase stat-icon"></i>
+                        </div>
+                        <small class="opacity-75">+{{ stats.new_jobs|default(0) }} this week</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Applications</h6>
+                                <h2 class="mb-0">{{ stats.total_applications|default(0) }}</h2>
+                            </div>
+                            <i class="bi bi-file-text stat-icon"></i>
+                        </div>
+                        <small class="opacity-75">{{ stats.new_applications|default(0) }} new</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="card stat-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Shortlisted</h6>
+                                <h2 class="mb-0">{{ stats.shortlisted|default(0) }}</h2>
+                            </div>
+                            <i class="bi bi-star stat-icon"></i>
+                        </div>
+                        <small class="opacity-75">{{ stats.conversion_rate|default(0) }}% conversion</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Hired</h6>
+                                <h2 class="mb-0">{{ stats.hired|default(0) }}</h2>
+                            </div>
+                            <i class="bi bi-trophy stat-icon"></i>
+                        </div>
+                        <small class="opacity-75">Success rate: {{ stats.hiring_rate|default(0) }}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-lightning-charge text-primary"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a href="/recruiter/post_job" class="text-decoration-none">
+                                    <div class="action-card">
+                                        <div class="action-icon">
+                                            <i class="bi bi-plus-circle text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="mb-0">Post New Job</h6>
+                                        <small class="text-muted">Find fresh talent</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/recruiter/candidates" class="text-decoration-none">
+                                    <div class="action-card">
+                                        <div class="action-icon">
+                                            <i class="bi bi-search text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="mb-0">Find Candidates</h6>
+                                        <small class="text-muted">Browse talent pool</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/recruiter/interviews" class="text-decoration-none">
+                                    <div class="action-card">
+                                        <div class="action-icon">
+                                            <i class="bi bi-calendar text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="mb-0">Schedule Interview</h6>
+                                        <small class="text-muted">Meet candidates</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/recruiter/messages" class="text-decoration-none">
+                                    <div class="action-card">
+                                        <div class="action-icon">
+                                            <i class="bi bi-envelope text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="mb-0">Messages</h6>
+                                        <small class="text-muted">{{ stats.unread_messages|default(0) }} unread</small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Jobs & Analytics Row -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-briefcase text-primary"></i> Recent Job Postings</h5>
+                        <a href="/recruiter/jobs" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        {% if jobs %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Job Title</th>
+                                            <th>Location</th>
+                                            <th>Applications</th>
+                                            <th>Shortlisted</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in jobs[:5] %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ job.title }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ job.company }}</small>
+                                            </td>
+                                            <td><i class="bi bi-geo-alt"></i> {{ job.location }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ job.applications_count }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ job.shortlisted_count|default(0) }}</span>
+                                            </td>
+                                            <td>
+                                                {% if job.status == 'active' %}
+                                                    <span class="status-badge status-active">Active</span>
+                                                {% else %}
+                                                    <span class="status-badge status-closed">Closed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="/recruiter/applications/{{ job._id }}" class="btn btn-primary">
+                                                        <i class="bi bi-people"></i>
+                                                    </a>
+                                                    <a href="/recruiter/edit_job/{{ job._id }}" class="btn btn-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    {% if job.status == 'active' %}
+                                                        <a href="/recruiter/close_job/{{ job._id }}" class="btn btn-danger" onclick="return confirm('Close this job?')">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="mt-2 text-muted">No jobs posted yet.</p>
+                                <a href="/recruiter/post_job" class="btn btn-primary">Post Your First Job</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-graph-up text-primary"></i> Hiring Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="hiringChart"></canvas>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Applications</span>
+                                <strong>{{ stats.total_applications|default(0) }}</strong>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: {{ (stats.total_applications / (stats.total_applications|default(1)) * 100) if stats.total_applications else 0 }}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shortlisted</span>
+                                <strong>{{ stats.shortlisted|default(0) }}</strong>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: {{ (stats.shortlisted / (stats.total_applications|default(1)) * 100) if stats.total_applications else 0 }}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Hired</span>
+                                <strong>{{ stats.hired|default(0) }}</strong>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: {{ (stats.hired / (stats.total_applications|default(1)) * 100) if stats.total_applications else 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Candidates -->
+        <div class="row mt-2 mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-star-fill text-warning"></i> Top Recommended Candidates</h5>
+                        <a href="/recruiter/candidates" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        {% if top_candidates %}
+                            <div class="row">
+                                {% for candidate in top_candidates %}
+                                <div class="col-md-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+                                    <div class="card candidate-card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0">{{ candidate.name }}</h6>
+                                                <span class="match-score">{{ "%.0f"|format(candidate.match_score) }}%</span>
+                                            </div>
+                                            <p class="text-muted small mb-2">{{ candidate.email }}</p>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Overall Score:</small>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-success" style="width: {{ candidate.overall_score }}%"></div>
+                                                </div>
+                                                <small class="text-primary">{{ "%.1f"|format(candidate.overall_score) }}%</small>
+                                            </div>
+                                            <div class="mt-2">
+                                                <a href="/recruiter/view_candidate/{{ candidate.id }}" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                                <a href="/recruiter/send_message/{{ candidate.id }}" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-envelope"></i> Message
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-people" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="mt-2 text-muted">No candidate recommendations yet.</p>
+                                <a href="/recruiter/post_job" class="btn btn-primary">Post Jobs to Find Candidates</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+        
+        // Hiring Overview Chart
+        const ctx = document.getElementById('hiringChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Applications', 'Shortlisted', 'Hired'],
+                datasets: [{
+                    data: [
+                        {{ stats.total_applications|default(0) }},
+                        {{ stats.shortlisted|default(0) }},
+                        {{ stats.hired|default(0) }}
+                    ],
+                    backgroundColor: ['#667eea', '#17a2b8', '#28a745'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Animate progress bars
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+        
+        // Add hover effect to stat cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

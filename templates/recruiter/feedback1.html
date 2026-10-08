@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Management - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .feedback-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feedback-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1rem;
+        }
+        
+        .feedback-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-application {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .badge-interview {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .delete-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feedback-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="bi bi-shield-lock"></i> Admin Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/assessments">
+                            <i class="bi bi-pencil-square"></i> Assessments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/feedback">
+                            <i class="bi bi-chat-dots"></i> Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/fraud_detection">
+                            <i class="bi bi-shield-exclamation"></i> Fraud Detection
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-chat-dots text-primary"></i> Feedback Management</h2>
+            <div>
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Feedback</h6>
+                                <h2 class="mb-0">{{ stats.total_feedbacks }}</h2>
+                            </div>
+                            <i class="bi bi-chat-dots fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Average Rating</h6>
+                                <h2 class="mb-0">{{ stats.avg_rating }} <i class="bi bi-star-fill"></i></h2>
+                            </div>
+                            <i class="bi bi-star fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Response Rate</h6>
+                                <h2 class="mb-0">{{ stats.response_rate }}%</h2>
+                            </div>
+                            <i class="bi bi-reply-all fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Needs Attention</h6>
+                                <h2 class="mb-0">{{ stats.needs_improvement }}</h2>
+                            </div>
+                            <i class="bi bi-exclamation-triangle fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Rating Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for rating in [5,4,3,2,1] %}
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <span>
+                                    {% for i in range(rating) %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% endfor %}
+                                    {% for i in range(5-rating) %}
+                                        <i class="bi bi-star text-muted"></i>
+                                    {% endfor %}
+                                </span>
+                                <span>{{ stats.rating_distribution[rating] }} reviews</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: {{ (stats.rating_distribution[rating] / stats.total_feedbacks * 100) if stats.total_feedbacks > 0 else 0 }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0"><i class="bi bi-graph-up"></i> Monthly Feedback Trends</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trendsChart" style="max-height: 250px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feedback List -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Feedback</h5>
+                <div class="input-group w-25">
+                    <input type="text" class="form-control" id="searchFeedback" placeholder="Search...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if feedbacks %}
+                    {% for feedback in feedbacks %}
+                    <div class="feedback-card" data-aos="fade-up">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <i class="bi bi-person-circle"></i> 
+                                                    <strong>{{ feedback.student_name }}</strong>
+                                                    <small class="text-muted">({{ feedback.student_email }})</small>
+                                                </h6>
+                                            </div>
+                                            <span class="feedback-badge {% if feedback.type == 'application' %}badge-application{% else %}badge-interview{% endif %}">
+                                                {% if feedback.type == 'application' %}
+                                                    <i class="bi bi-briefcase"></i> Job Application
+                                                {% else %}
+                                                    <i class="bi bi-chat"></i> Interview
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        
+                                        {% if feedback.job_title %}
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-briefcase"></i> Position: {{ feedback.job_title }}
+                                            </small>
+                                            {% if feedback.recruiter_name %}
+                                            <small class="text-muted ms-3">
+                                                <i class="bi bi-building"></i> Recruiter: {{ feedback.recruiter_name }}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="rating-stars mb-2">
+                                            {% for i in range(feedback.rating) %}
+                                                <i class="bi bi-star-fill"></i>
+                                            {% endfor %}
+                                            {% for i in range(5 - feedback.rating) %}
+                                                <i class="bi bi-star"></i>
+                                            {% endfor %}
+                                            <span class="text-muted ms-2">({{ feedback.date.strftime('%Y-%m-%d %H:%M') if feedback.date else 'N/A' }})</span>
+                                        </div>
+                                        
+                                        <p class="mb-2">{{ feedback.feedback }}</p>
+                                        
+                                        {% if feedback.suggestions %}
+                                        <div class="alert alert-info mt-2">
+                                            <i class="bi bi-lightbulb"></i> <strong>Suggestion:</strong> {{ feedback.suggestions }}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if feedback.recruiter_response %}
+                                        <div class="alert alert-success mt-2">
+                                            <i class="bi bi-reply-fill"></i> <strong>Recruiter Response:</strong>
+                                            <p class="mb-0 mt-1">{{ feedback.recruiter_response }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4 text-md-end">
+                                        <a href="/admin/feedback/{{ feedback._id }}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i> View Details
+                                        </a>
+                                        <button class="btn btn-sm btn-danger delete-btn" onclick="deleteFeedback('{{ feedback._id }}')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-chat-dots" style="font-size: 4rem; color: #ccc;"></i>
+                        <h5 class="mt-3 text-muted">No feedback available</h5>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+        
+        // Trends Chart
+        const ctx = document.getElementById('trendsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [{% for trend in monthly_trends %}'{{ trend.month }}',{% endfor %}],
+                datasets: [{
+                    label: 'Feedback Received',
+                    data: [{% for trend in monthly_trends %}{{ trend.count }},{% endfor %}],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        
+        // Search functionality
+        document.getElementById('searchFeedback').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.feedback-card');
+            
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Delete feedback
+        function deleteFeedback(feedbackId) {
+            if (confirm('Are you sure you want to delete this feedback? This action cannot be undone.')) {
+                fetch(`/admin/delete_feedback/${feedbackId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting feedback');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting feedback');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
